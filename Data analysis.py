@@ -123,10 +123,10 @@ ax.set_xlabel('Year', fontname='Arial')
             #dpi=500, bbox_inches='tight')
 
 
-# In[ ]:
+# In[29]:
 
 
-
+opd.head()
 
 
 # In[6]:
@@ -157,6 +157,44 @@ ax.set_xlabel('Year', fontname='Arial')
             #dpi=500, bbox_inches='tight')
 
 
+# In[28]:
+
+
+"""Samaan kuvaajaan molemmat"""
+
+# Set Seaborn style and grid appearance
+sns.set_style('whitegrid')
+plt.rcParams['grid.color'] = '#eeeeee'
+plt.rcParams['grid.linewidth'] = 0.5
+plt.rcParams['axes.grid'] = True
+plt.rcParams['grid.alpha'] = 0.8
+
+# Create one figure and axis
+fig, ax = plt.subplots(figsize=(8, 6))
+
+# Define light purple
+light_purple = "#d4b3ff"
+
+# Plot both lines on the same axes
+sns.lineplot(data=opd, x='year', y='uniques', ax=ax, color='pink', label='Origins per Destination')
+sns.lineplot(data=dpo, x='year', y='uniques', ax=ax, color=light_purple, label='Destinations per Origin')
+
+# Add title and labels
+ax.set_title("Unique regions per NUTS 3 (Origins and Destinations)", fontsize=14, fontname='Arial')
+ax.set_ylabel("Number of Unique Regions", fontname='Arial')
+ax.set_xlabel("Year", fontname='Arial')
+
+# Show legend
+ax.legend()
+
+# Save to file
+plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Uniques_nuts3_both.png',
+            dpi=500, bbox_inches='tight')
+
+# Show the plot
+plt.show()
+
+
 # In[7]:
 
 
@@ -172,6 +210,8 @@ silhouette_scores = []
 
 pivot_df
 
+
+# ## Clustering
 
 # In[8]:
 
@@ -224,14 +264,20 @@ g = sns.lmplot(data=opd, x='year', y='norm_shannon', hue='cluster',
                height=6, aspect=1.2, order=1, scatter=False)
 
 g.set_axis_labels("Year", "Normalized Shannon Entropy")
-g.fig.suptitle("Shannon entropy per cluster", y=1.02)
+g.fig.suptitle("Normalized Shannon entropy per cluster", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends.png',
-          dpi=300, bbox_inches='tight')
+#g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends.png',
+          #dpi=300, bbox_inches='tight')
 
 
-# In[11]:
+# In[18]:
+
+
+sco_df.head()
+
+
+# In[12]:
 
 
 orange_shades = ['#ffe5b4',  # light peach
@@ -247,28 +293,37 @@ for i, cluster in enumerate(sorted(opd['cluster'].unique())):
     sns.regplot(data=subset, x='year', y='norm_shannon', 
                 scatter=False, order=1, label=f'Cluster {cluster}', color=orange_shades[i])
 
-plt.title("Shannon entropy per cluster")
+plt.title("Normalized Shannon entropy per cluster, origin regions per destination")
 plt.xlabel("Year")
 plt.ylabel("Normalized Shannon Entropy")
 plt.legend(title='Cluster')
 
-plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_orange.png',
-            dpi=300, bbox_inches='tight')
+#plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_orange.png',
+            #dpi=300, bbox_inches='tight')
 plt.show()
 
 
-# In[10]:
+# # Seuraavaks:
+# ## - Jaa data pre- ja post-Covid-19 (jaoin opd ja dpo)
+# ## - Klusteroi ne puolikkaat, kato mitkä huimat erot löytyy
+# ## - Tee kartat niista destinations per origin regioneista myös
+# ## - Isommat vuosiluvut 2018/2020 karttoihin
+
+# In[42]:
 
 
-#k_range = range(2, 14) # Test k from 2 to 14
+#k_range = range(2, 8) # Test k from 2 to 8
+#print('Starting clustering...')
 #for k in k_range:
         #kmeans = TimeSeriesKMeans(n_clusters=k, metric='dtw', random_state=42,
                                   #n_init=5, max_iter=42) # n_init suppresses warning
         #kmeans.fit(pivot_df)
         #wcss.append(kmeans.inertia_) # Inertia is the WCSS
         #score = silhouette_score(pivot_df, kmeans.labels_, metric='dtw')
+        #print('Adding silhouette scores...')
         #silhouette_scores.append(score)
 # plot elbow method inertias
+#print('Plotting elbow methods...')
 #fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(10, 5))
 #axes[0].plot(k_range, wcss, marker='o', linestyle='--')
 #axes[0].set_title('Elbow Method for Optimal k ({})'.format(col))
@@ -277,6 +332,7 @@ plt.show()
 #axes[0].grid(True)
     
 # plot silhouette scores
+#print('Plotting silhouette scores...')
 #axes[1].plot(k_range, silhouette_scores, marker='o', linestyle='--')
 #axes[1].set_title('Silhouette Score for Optimal k ({})'.format(col))
 #axes[1].set_xlabel('Number of Clusters (k)')
@@ -284,94 +340,134 @@ plt.show()
 #axes[1].grid(True)
 
 
-# ### Number of origin region occurrences per destination NUTS 3
+# ## Pre- and post-Covid-19
+# Dividing the dataframe, resulting in one df with the years 2014-2019 (pre-Covid) and one with the years 2020-2022 (post-Covid). Finding out the optimal K for both, using the Normalized Shannon entropy values.
+# ### Origins per destination
 
-# In[ ]:
+# In[34]:
 
 
-# Dictionary to store the Counter results for each destination NUTS 3 region
-origin_count_per_dest_nuts3 = {}
+# Origins per destinations with years 2014–2019
+opd_2014_2019 = opd[opd['year'].between(2014, 2019)]
 
-# Iterating over each unique destination NUTS 3 region
-for nuts3 in opd['NUTS3'].unique():
-    # Getting all regions in the 'orig' column for this NUTS 3 region
-    regions = [region for sublist in opd[opd['NUTS3'] == nuts3]['orig'] for region in sublist]
-    # Counting occurrences of each origin NUTS 3 region using Counter
-    origin_count_per_dest_nuts3[nuts3] = Counter(regions)
+# Origins per destinations with years 2020–2022
+opd_2020_2022 = opd[opd['year'].between(2020, 2022)]
+
+
+# In[37]:
+
+
+# Pivot the data
+pivot_df_pre = opd_2014_2019.pivot(index='NUTS3', columns='year', values='norm_shannon')
+pivot_df_post = opd_2020_2022.pivot(index='NUTS3', columns='year', values='norm_shannon')
     
-origin_count_per_dest_nuts3 # All years
+# Handle missing values (fill with 0 for simplicity)
+pivot_df_pre = pivot_df_pre.fillna(0.0)
+pivot_df_post = pivot_df_post.fillna(0.0)
+
+# get lists for silhouettes scores and inertias
+wcss_pre = []
+wcss_post = []
+silhouette_scores_pre = []
+silhouette_scores_post = []
 
 
-# ### The Shannon-Weiner diversity index (not normalized)
-# Shannon equitability index?? Se on normalisoitu 0 ja 1 välille
-
-# In[ ]:
+# In[39]:
 
 
-# Defining a function to calculate the Shannon-Weiner index using skbio
-def calculate_shannon_weiner_with_skbio(region_counter):
-    counts = list(region_counter.values())  # Converting counter to a list of counts
-    shannon_index = skbio.diversity.alpha.shannon(counts)
-    return shannon_index
-
-# Calculating Shannon-Weiner index for each destination NUTS 3 region
-diversity_indexes = {}
-for nuts3, counter in origin_count_per_dest_nuts3.items():
-    shannon_index = calculate_shannon_weiner_with_skbio(counter)
-    diversity_indexes[nuts3] = shannon_index
-
-# Output the results
-for nuts3, index in diversity_indexes.items():
-    print(f"Shannon-Weiner index for {nuts3}: {index:.4f}")
+# Finding out the optimal K
+k_range = range(2, 8) # Test k from 2 to 8
+print('Starting...')
+for k in k_range:
+        print('Loop begins...')
+        kmeans = TimeSeriesKMeans(n_clusters=k, metric='dtw', random_state=42,
+                                  n_init=5, max_iter=42) # n_init suppresses warning
+        kmeans.fit(pivot_df_pre)
+        print('Adding WCSS...')
+        wcss_pre.append(kmeans.inertia_) # Inertia is the WCSS
+        score = silhouette_score(pivot_df_pre, kmeans.labels_, metric='dtw')
+        print('Adding silhouette scores...')
+        silhouette_scores_pre.append(score)
+        
+# plot elbow method inertias
+print('Plotting elbow methods...')
+fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(10, 5))
+axes[0].plot(k_range, wcss_pre, marker='o', linestyle='--')
+axes[0].set_title('Elbow Method for Optimal k ({})'.format(col))
+axes[0].set_xlabel('Number of Clusters (k)')
+axes[0].set_ylabel('WCSS (Inertia)')
+axes[0].grid(True)
     
-# 0 on ei yhtään diversiteettiä, mitä korkeempi arvo sitä korkeempi diversiteetti
+# plot silhouette scores
+print('Plotting silhouette scores...')
+axes[1].plot(k_range, silhouette_scores_pre, marker='o', linestyle='--')
+axes[1].set_title('Silhouette Score for Optimal k ({})'.format(col))
+axes[1].set_xlabel('Number of Clusters (k)')
+axes[1].set_ylabel('Average Silhouette Score')
+axes[1].grid(True)
 
 
-# ### Clustering
+# ### Destinations per origins
 
-# In[ ]:
+# In[40]:
 
 
-# Converting the dictionary to dataframe
-df = pd.DataFrame(list(diversity_indexes.items()), columns=['nuts3', 'shannon_index'])
+# Destinations per origins with years 2014–2019
+dpo_2014_2019 = dpo[dpo['year'].between(2014, 2019)]
 
-# DBSCAN
-dbscan = DBSCAN(eps=0.2, min_samples=2)
-df['cluster'] = dbscan.fit_predict(df[['shannon_index']])
+# Destinations per origins with years 2020–2022
+dpo_2020_2022 = dpo[dpo['year'].between(2020, 2022)]
 
-# Unique cluster labels (including -1 for noise)
-unique_clusters = sorted(df['cluster'].unique())
 
-# Choosing a colour map for the clusters
-colors = plt.cm.get_cmap('Oranges', len(unique_clusters))
+# In[41]:
 
-# Plotting each cluster
-plt.figure(figsize=(10, 2))
-for i, cluster in enumerate(unique_clusters):
-    cluster_data = df[df['cluster'] == cluster]
-    plt.scatter(
-        cluster_data['shannon_index'],
-        [0]*len(cluster_data),
-        label=f'Cluster {cluster}' if cluster != -1 else 'Noise',
-        color=colors(i),
-        edgecolor='black',
-        s=50
-    )
 
-plt.yticks([])  # 1D, no need for y
-plt.xlabel('Shannon-Weiner Index')
-plt.title('DBSCAN Clustering of Shannon-Weiner Diversity Index')
-plt.legend(
-    loc='center left',
-    bbox_to_anchor=(1, 0.5), # Outside of graph
-    title='Clusters'
-)
-plt.tight_layout()
-plt.show()
+# Pivot the data
+pivot_df_pred = dpo_2014_2019.pivot(index='NUTS3', columns='year', values='norm_shannon')
+pivot_df_postd = dpo_2020_2022.pivot(index='NUTS3', columns='year', values='norm_shannon')
+    
+# Handle missing values (fill with 0 for simplicity)
+pivot_df_pred = pivot_df_pred.fillna(0.0)
+pivot_df_postd = pivot_df_postd.fillna(0.0)
+
+# get lists for silhouettes scores and inertias
+wcss_pred = []
+wcss_postd = []
+silhouette_scores_pred = []
+silhouette_scores_postd = []
 
 
 # In[ ]:
 
 
-
+# Finding out the optimal K
+k_range = range(2, 8) # Test k from 2 to 8
+print('Starting...')
+for k in k_range:
+        print('Loop begins...')
+        kmeans = TimeSeriesKMeans(n_clusters=k, metric='dtw', random_state=42,
+                                  n_init=5, max_iter=42) # n_init suppresses warning
+        kmeans.fit(pivot_df_pred)
+        print('Adding WCSS...')
+        wcss_pred.append(kmeans.inertia_) # Inertia is the WCSS
+        score = silhouette_score(pivot_df_pred, kmeans.labels_, metric='dtw')
+        print('Adding silhouette scores...')
+        silhouette_scores_pred.append(score)
+        
+# plot elbow method inertias
+print('Plotting elbow methods...')
+fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(10, 5))
+axes[0].plot(k_range, wcss_pred, marker='o', linestyle='--')
+axes[0].set_title('Elbow Method for Optimal k ({})'.format(col))
+axes[0].set_xlabel('Number of Clusters (k)')
+axes[0].set_ylabel('WCSS (Inertia)')
+axes[0].grid(True)
+    
+# plot silhouette scores
+print('Plotting silhouette scores...')
+axes[1].plot(k_range, silhouette_scores_pred, marker='o', linestyle='--')
+axes[1].set_title('Silhouette Score for Optimal k ({})'.format(col))
+axes[1].set_xlabel('Number of Clusters (k)')
+axes[1].set_ylabel('Average Silhouette Score')
+axes[1].grid(True)
 
