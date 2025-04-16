@@ -123,13 +123,13 @@ ax.set_xlabel('Year', fontname='Arial')
             #dpi=500, bbox_inches='tight')
 
 
-# In[29]:
+# In[6]:
 
 
 opd.head()
 
 
-# In[6]:
+# In[7]:
 
 
 # All nuts 3, destinations per origin
@@ -157,7 +157,7 @@ ax.set_xlabel('Year', fontname='Arial')
             #dpi=500, bbox_inches='tight')
 
 
-# In[28]:
+# In[8]:
 
 
 """Samaan kuvaajaan molemmat"""
@@ -188,14 +188,14 @@ ax.set_xlabel("Year", fontname='Arial')
 ax.legend()
 
 # Save to file
-plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Uniques_nuts3_both.png',
-            dpi=500, bbox_inches='tight')
+#plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Uniques_nuts3_both.png',
+            #dpi=500, bbox_inches='tight')
 
 # Show the plot
 plt.show()
 
 
-# In[7]:
+# In[9]:
 
 
 # Pivot the data
@@ -213,7 +213,7 @@ pivot_df
 
 # ## Clustering
 
-# In[8]:
+# In[10]:
 
 
 # scale the data if "pivot_df" doesnt work
@@ -222,7 +222,7 @@ scaled_data = scaler.fit_transform(pivot_df)
 
 # init the model
 print("Initializing model")
-model = TimeSeriesKMeans(n_clusters=4, metric="dtw", n_init=15, max_iter=42, random_state=42)
+model = TimeSeriesKMeans(n_clusters=6, metric="dtw", n_init=15, max_iter=42, random_state=42)
 
 # fit the model
 print("Fitting model")
@@ -236,7 +236,7 @@ sco_df = pd.DataFrame()
 
 # loop over cluster count
 print("Calculating silhouette scores..")
-for label in range(4):
+for label in range(6):
         
         # get silhouette score for current cluser
         score = silhs[clusters == label].mean()
@@ -267,40 +267,40 @@ g.set_axis_labels("Year", "Normalized Shannon Entropy")
 g.fig.suptitle("Normalized Shannon entropy per cluster", y=1.02)
 
 # Save the plot
-#g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends.png',
-          #dpi=300, bbox_inches='tight')
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_k6.png',
+          dpi=500, bbox_inches='tight')
 
 
 # In[18]:
 
 
-sco_df.head()
+sco_df
 
 
-# In[12]:
+# In[13]:
 
 
-orange_shades = ['#ffe5b4',  # light peach
-                 '#ffcc80',  # light orange
-                 '#ff9900',  # standard orange
-                 '#cc6600']  # darker burnt orange
+#orange_shades = ['#ffe5b4',  # light peach
+                 #'#ffcc80',  # light orange
+                 #'#ff9900',  # standard orange
+                 #'#cc6600']  # darker burnt orange
 
-plt.figure(figsize=(10, 6))
-print("Plotting with orange shades")
+#plt.figure(figsize=(10, 6))
+#print("Plotting with orange shades")
 
-for i, cluster in enumerate(sorted(opd['cluster'].unique())):
-    subset = opd[opd['cluster'] == cluster]
-    sns.regplot(data=subset, x='year', y='norm_shannon', 
-                scatter=False, order=1, label=f'Cluster {cluster}', color=orange_shades[i])
+#for i, cluster in enumerate(sorted(opd['cluster'].unique())):
+    #subset = opd[opd['cluster'] == cluster]
+    K#sns.regplot(data=subset, x='year', y='norm_shannon', 
+                #scatter=False, order=1, label=f'Cluster {cluster}', color=orange_shades[i])
 
-plt.title("Normalized Shannon entropy per cluster, origin regions per destination")
-plt.xlabel("Year")
-plt.ylabel("Normalized Shannon Entropy")
-plt.legend(title='Cluster')
+#plt.title("Normalized Shannon entropy per cluster, origin regions per destination")
+#plt.xlabel("Year")
+#plt.ylabel("Normalized Shannon Entropy")
+#plt.legend(title='Cluster')
 
-#plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_orange.png',
-            #dpi=300, bbox_inches='tight')
-plt.show()
+#plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_orange_k6.png',
+            #dpi=500, bbox_inches='tight')
+#plt.show()
 
 
 # # Seuraavaks:
@@ -309,7 +309,7 @@ plt.show()
 # ## - Tee kartat niista destinations per origin regioneista myös
 # ## - Isommat vuosiluvut 2018/2020 karttoihin
 
-# In[42]:
+# In[14]:
 
 
 #k_range = range(2, 8) # Test k from 2 to 8
@@ -344,7 +344,7 @@ plt.show()
 # Dividing the dataframe, resulting in one df with the years 2014-2019 (pre-Covid) and one with the years 2020-2022 (post-Covid). Finding out the optimal K for both, using the Normalized Shannon entropy values.
 # ### Origins per destination
 
-# In[34]:
+# In[19]:
 
 
 # Origins per destinations with years 2014–2019
@@ -354,7 +354,7 @@ opd_2014_2019 = opd[opd['year'].between(2014, 2019)]
 opd_2020_2022 = opd[opd['year'].between(2020, 2022)]
 
 
-# In[37]:
+# In[20]:
 
 
 # Pivot the data
@@ -372,7 +372,7 @@ silhouette_scores_pre = []
 silhouette_scores_post = []
 
 
-# In[39]:
+# In[21]:
 
 
 # Finding out the optimal K
@@ -389,11 +389,16 @@ for k in k_range:
         print('Adding silhouette scores...')
         silhouette_scores_pre.append(score)
         
+
+
+# In[24]:
+
+
 # plot elbow method inertias
 print('Plotting elbow methods...')
 fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(10, 5))
 axes[0].plot(k_range, wcss_pre, marker='o', linestyle='--')
-axes[0].set_title('Elbow Method for Optimal k ({})'.format(col))
+axes[0].set_title('Elbow Method for Optimal k (2014-2019)')
 axes[0].set_xlabel('Number of Clusters (k)')
 axes[0].set_ylabel('WCSS (Inertia)')
 axes[0].grid(True)
@@ -401,15 +406,75 @@ axes[0].grid(True)
 # plot silhouette scores
 print('Plotting silhouette scores...')
 axes[1].plot(k_range, silhouette_scores_pre, marker='o', linestyle='--')
-axes[1].set_title('Silhouette Score for Optimal k ({})'.format(col))
+axes[1].set_title('Silhouette Score for Optimal k (2014–2019)')
 axes[1].set_xlabel('Number of Clusters (k)')
 axes[1].set_ylabel('Average Silhouette Score')
 axes[1].grid(True)
 
+#plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/ElbowSilhouette_preCov_opd_normsha.png',
+            #dpi=500, bbox_inches='tight')
+    
+
+
+# In[ ]:
+
+
+"""Clustering pre-Covid"""
+
+# initiate the model
+print("Initializing model")
+model = TimeSeriesKMeans(n_clusters=4, metric="dtw", n_init=15, max_iter=42, random_state=42)
+
+# fit the model
+print("Fitting model")
+clusters = model.fit_predict(pivot_df_pre)
+    
+# get silhouette scores
+silhs = silhouette_samples(cdist_dtw(pivot_df_pre), clusters, metric='precomputed')
+
+# create empty dataframe for silhouette scores
+sco_df = pd.DataFrame()
+
+# loop over cluster count
+print("Calculating silhouette scores..")
+for label in range(4):
+        
+        # get silhouette score for current cluser
+        score = silhs[clusters == label].mean()
+        
+        # put into dataframe
+        sco_df.at[label, 'cluster'] = label
+        sco_df.at[label, 'score'] = score
+    
+# Add cluster labels to the DataFrame
+pivot_df_pre['cluster'] = clusters
+    
+# create a copy of dataframe
+nudf = pivot_df_pre.reset_index()
+
+# create dictionary of NUTS 3 codes and cluster labels
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+
+# assign cluster labels to NUTS 3 region polygons
+print("Assigning clusters to original data")
+opd_2014_2019['cluster'] = opd_2014_2019['NUTS3'].apply(lambda x: clusterd[x])
+
+# Plot
+print("Plotting")
+g = sns.lmplot(data=opd_2014_2019, x='year', y='norm_shannon', hue='cluster', 
+               height=6, aspect=1.2, order=1, scatter=False)
+
+g.set_axis_labels("Year", "Normalized Shannon Entropy")
+g.fig.suptitle("Normalized Shannon entropy per cluster", y=1.02)
+
+# Save the plot
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_preCov_normsha.png',
+          dpi=500, bbox_inches='tight')
+
 
 # ### Destinations per origins
 
-# In[40]:
+# In[25]:
 
 
 # Destinations per origins with years 2014–2019
@@ -419,7 +484,7 @@ dpo_2014_2019 = dpo[dpo['year'].between(2014, 2019)]
 dpo_2020_2022 = dpo[dpo['year'].between(2020, 2022)]
 
 
-# In[41]:
+# In[26]:
 
 
 # Pivot the data
@@ -454,11 +519,16 @@ for k in k_range:
         print('Adding silhouette scores...')
         silhouette_scores_pred.append(score)
         
+
+
+# In[ ]:
+
+
 # plot elbow method inertias
 print('Plotting elbow methods...')
 fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(10, 5))
 axes[0].plot(k_range, wcss_pred, marker='o', linestyle='--')
-axes[0].set_title('Elbow Method for Optimal k ({})'.format(col))
+axes[0].set_title('Elbow Method for Optimal k (2014-2019)')
 axes[0].set_xlabel('Number of Clusters (k)')
 axes[0].set_ylabel('WCSS (Inertia)')
 axes[0].grid(True)
@@ -466,8 +536,17 @@ axes[0].grid(True)
 # plot silhouette scores
 print('Plotting silhouette scores...')
 axes[1].plot(k_range, silhouette_scores_pred, marker='o', linestyle='--')
-axes[1].set_title('Silhouette Score for Optimal k ({})'.format(col))
+axes[1].set_title('Silhouette Score for Optimal k (2014–2019)')
 axes[1].set_xlabel('Number of Clusters (k)')
 axes[1].set_ylabel('Average Silhouette Score')
 axes[1].grid(True)
+
+plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/ElbowSilhouette_preCov_dpo_normsha.png',
+            dpi=500, bbox_inches='tight')
+
+
+# In[ ]:
+
+
+
 
