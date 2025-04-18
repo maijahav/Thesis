@@ -21,9 +21,7 @@ from tslearn.metrics import cdist_dtw
 import numpy as np
 
 
-# ### Number of origin region occurrences altogether
-
-# In[33]:
+# In[2]:
 
 
 # Read data
@@ -39,14 +37,10 @@ opd = data.groupby(['dest', 'year']).agg({'orig':lambda x: list(x)}).reset_index
 # Vice versa
 dpo = data.groupby(['orig', 'year']).agg({'dest':lambda x: list(x)}).reset_index().rename(columns={'orig':'NUTS3'})
 
-# Flattening the 'orig' column and counting occurrences of each NUTS 3 region as an origin
-flat_list = [item for sublist in dpo['dest'] for item in sublist]
-counter = Counter(flat_list)# All years
-
 
 # ### Calculating diversity indices
 
-# In[34]:
+# In[3]:
 
 
 # Creating a column for the number of occurences
@@ -103,23 +97,23 @@ for i, row in dpo.iterrows():
 
 # All nuts 3, origins per destination
 # Set Seaborn style
-sns.set_style('whitegrid')
+#sns.set_style('whitegrid')
 
 # Customize grid appearance
-plt.rcParams['grid.color'] = '#eeeeee'     # Very light grey
-plt.rcParams['grid.linewidth'] = 0.5
-plt.rcParams['axes.grid'] = True
-plt.rcParams['grid.alpha'] = 0.8           # Dimmer with transparency
+#plt.rcParams['grid.color'] = '#eeeeee'     # Very light grey
+#plt.rcParams['grid.linewidth'] = 0.5
+#plt.rcParams['axes.grid'] = True
+#plt.rcParams['grid.alpha'] = 0.8           # Dimmer with transparency
 
-fig, ax = plt.subplots(figsize=(8, 6))
+#fig, ax = plt.subplots(figsize=(8, 6))
 
 # Plot line in orange
-sns.lineplot(data=opd, x='year', y='uniques', ax=ax, color='pink')
+#sns.lineplot(data=opd, x='year', y='uniques', ax=ax, color='pink')
 
 # Labels and title
-ax.set_title("Unique Origins Per NUTS 3 Destination Regions", fontsize=14, fontname='Arial')
-ax.set_ylabel("Number of Unique Origin Regions", fontname='Arial')
-ax.set_xlabel('Year', fontname='Arial')
+#ax.set_title("Unique Origins Per NUTS 3 Destination Regions", fontsize=14, fontname='Arial')
+#ax.set_ylabel("Number of Unique Origin Regions", fontname='Arial')
+#ax.set_xlabel('Year', fontname='Arial')
 
 # Save to file
 #plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/UniqueOrigins_nuts3_per_dest.png',
@@ -129,28 +123,28 @@ ax.set_xlabel('Year', fontname='Arial')
 # #### Plotting destinations per origin regions
 # Change variables where needed.
 
-# In[7]:
+# In[6]:
 
 
 # All nuts 3, destinations per origin
 # Set Seaborn style
-sns.set_style('whitegrid')
+#sns.set_style('whitegrid')
 
 # Customize grid appearance
-plt.rcParams['grid.color'] = '#eeeeee'     # Very light grey
-plt.rcParams['grid.linewidth'] = 0.5
-plt.rcParams['axes.grid'] = True
-plt.rcParams['grid.alpha'] = 0.8           # Dimmer with transparency
+#plt.rcParams['grid.color'] = '#eeeeee'     # Very light grey
+#plt.rcParams['grid.linewidth'] = 0.5
+#plt.rcParams['axes.grid'] = True
+#plt.rcParams['grid.alpha'] = 0.8           # Dimmer with transparency
 
-fig, ax = plt.subplots(figsize=(8, 6))
+#fig, ax = plt.subplots(figsize=(8, 6))
 
 # Plot line
-sns.lineplot(data=dpo, x='year', y='uniques', ax=ax, color='pink')
+#sns.lineplot(data=dpo, x='year', y='uniques', ax=ax, color='pink')
 
 # Labels and title
-ax.set_title("Unique Destinations Per NUTS 3 Origin Regions", fontsize=14, fontname='Arial')
-ax.set_ylabel("Number of Unique Destination Regions", fontname='Arial')
-ax.set_xlabel('Year', fontname='Arial')
+#ax.set_title("Unique Destinations Per NUTS 3 Origin Regions", fontsize=14, fontname='Arial')
+#ax.set_ylabel("Number of Unique Destination Regions", fontname='Arial')
+#ax.set_xlabel('Year', fontname='Arial')
 
 # Save to file
 #plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/UniqueDestinations_nuts3_per_orig.png',
@@ -160,121 +154,121 @@ ax.set_xlabel('Year', fontname='Arial')
 # #### Plotting both in the same graph
 # Change variables where needed.
 
-# In[8]:
+# In[7]:
 
 
 # Set Seaborn style and grid appearance
-sns.set_style('whitegrid')
-plt.rcParams['grid.color'] = '#eeeeee'
-plt.rcParams['grid.linewidth'] = 0.5
-plt.rcParams['axes.grid'] = True
-plt.rcParams['grid.alpha'] = 0.8
+#sns.set_style('whitegrid')
+#plt.rcParams['grid.color'] = '#eeeeee'
+#plt.rcParams['grid.linewidth'] = 0.5
+#plt.rcParams['axes.grid'] = True
+#plt.rcParams['grid.alpha'] = 0.8
 
 # Create one figure and axis
-fig, ax = plt.subplots(figsize=(8, 6))
+#fig, ax = plt.subplots(figsize=(8, 6))
 
 # Define light purple
-light_purple = "#d4b3ff"
+#light_purple = "#d4b3ff"
 
 # Plot both lines on the same axes
-sns.lineplot(data=opd, x='year', y='uniques', ax=ax, color='pink', label='Origins per Destination')
-sns.lineplot(data=dpo, x='year', y='uniques', ax=ax, color=light_purple, label='Destinations per Origin')
+#sns.lineplot(data=opd, x='year', y='uniques', ax=ax, color='pink', label='Origins per Destination')
+#sns.lineplot(data=dpo, x='year', y='uniques', ax=ax, color=light_purple, label='Destinations per Origin')
 
 # Add title and labels
-ax.set_title("Unique regions per NUTS 3 (Origins and Destinations)", fontsize=14, fontname='Arial')
-ax.set_ylabel("Number of Unique Regions", fontname='Arial')
-ax.set_xlabel("Year", fontname='Arial')
+#ax.set_title("Unique regions per NUTS 3 (Origins and Destinations)", fontsize=14, fontname='Arial')
+#ax.set_ylabel("Number of Unique Regions", fontname='Arial')
+#ax.set_xlabel("Year", fontname='Arial')
 
 # Show legend
-ax.legend()
+#ax.legend()
 
 # Save to file
 #plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Uniques_nuts3_both.png',
             #dpi=500, bbox_inches='tight')
 
 # Show the plot
-plt.show()
+#plt.show()
 
 
 # ## Clustering
 
 # ### Years 2014-2022
 
-# In[9]:
+# In[8]:
 
 
 # Pivoting the data
-pivot_df = opd.pivot(index='NUTS3', columns='year', values='norm_shannon') # Origins per destinations
+#pivot_df = opd.pivot(index='NUTS3', columns='year', values='norm_shannon') # Origins per destinations
     
 # Handling missing values (filling with 0 for simplicity)
-pivot_df = pivot_df.fillna(0.0)
+#pivot_df = pivot_df.fillna(0.0)
 
 # Creating lists for silhouettes scores and inertias
-wcss = []
-silhouette_scores = []
+#wcss = []
+#silhouette_scores = []
 
-pivot_df
+#pivot_df
 
 
-# In[10]:
+# In[9]:
 
 
 # Scaling the data if "pivot_df" doesnt work
-scaler = StandardScaler()
-scaled_data = scaler.fit_transform(pivot_df)
+#scaler = StandardScaler()
+#scaled_data = scaler.fit_transform(pivot_df)
 
 # Initiating the model
-print("Initializing model")
-model = TimeSeriesKMeans(n_clusters=6, metric="dtw", n_init=15, max_iter=42, random_state=42)
+#print("Initializing model")
+#model = TimeSeriesKMeans(n_clusters=6, metric="dtw", n_init=15, max_iter=42, random_state=42)
 
 # Fitting the model
-print("Fitting model")
-clusters = model.fit_predict(pivot_df)
+#print("Fitting model")
+#clusters = model.fit_predict(pivot_df)
     
 # Getting silhouette scores
-silhs = silhouette_samples(cdist_dtw(pivot_df), clusters, metric='precomputed')
+#silhs = silhouette_samples(cdist_dtw(pivot_df), clusters, metric='precomputed')
 
 # Creating an empty dataframe for silhouette scores
-sco_df = pd.DataFrame()
+#sco_df = pd.DataFrame()
 
 # Looping over cluster count
-print("Calculating silhouette scores..")
-for label in range(6):
+#print("Calculating silhouette scores..")
+#for label in range(6):
         
         # Getting silhouette score for current cluser
-        score = silhs[clusters == label].mean()
+        #score = silhs[clusters == label].mean()
         
         # Putting the score into dataframe
-        sco_df.at[label, 'cluster'] = label
-        sco_df.at[label, 'score'] = score
+        #sco_df.at[label, 'cluster'] = label
+        #sco_df.at[label, 'score'] = score
     
 # Adding cluster labels to the DataFrame
-pivot_df['cluster'] = clusters
+#pivot_df['cluster'] = clusters
     
 # Creating a copy of dataframe
-nudf = pivot_df.reset_index()
+#nudf = pivot_df.reset_index()
 
 # Creating a dictionary of NUTS 3 codes and cluster labels
-clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+#clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
 
 # Assigning cluster labels to NUTS 3 region polygons
-print("Assigning clusters to original data")
-opd['cluster'] = opd['NUTS3'].apply(lambda x: clusterd[x])
+#print("Assigning clusters to original data")
+#opd['cluster'] = opd['NUTS3'].apply(lambda x: clusterd[x])
 
 # Plotting
-print("Plotting")
-g = sns.lmplot(data=opd, x='year', y='norm_shannon', hue='cluster', 
-               height=6, aspect=1.2, order=1, scatter=False)
+#print("Plotting")
+#g = sns.lmplot(data=opd, x='year', y='norm_shannon', hue='cluster', 
+               #height=6, aspect=1.2, order=1, scatter=False)
 
-g.set_axis_labels("Year", "Normalized Shannon Entropy")
-g.fig.suptitle("Normalized Shannon entropy per cluster", y=1.02)
+#g.set_axis_labels("Year", "Normalized Shannon Entropy")
+#g.fig.suptitle("Normalized Shannon entropy per cluster", y=1.02)
 
 # Saving the plot
 #g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_k6.png',
           #dpi=500, bbox_inches='tight')
 
 
-# In[13]:
+# In[10]:
 
 
 #orange_shades = ['#ffe5b4',  # light peach
@@ -287,7 +281,7 @@ g.fig.suptitle("Normalized Shannon entropy per cluster", y=1.02)
 
 #for i, cluster in enumerate(sorted(opd['cluster'].unique())):
     #subset = opd[opd['cluster'] == cluster]
-    K#sns.regplot(data=subset, x='year', y='norm_shannon', 
+    #sns.regplot(data=subset, x='year', y='norm_shannon', 
                 #scatter=False, order=1, label=f'Cluster {cluster}', color=orange_shades[i])
 
 #plt.title("Normalized Shannon entropy per cluster, origin regions per destination")
@@ -300,13 +294,7 @@ g.fig.suptitle("Normalized Shannon entropy per cluster", y=1.02)
 #plt.show()
 
 
-# # Seuraavaks:
-# ## - Jaa data pre- ja post-Covid-19 (jaoin opd ja dpo)
-# ## - Klusteroi ne puolikkaat, kato mitkä huimat erot löytyy
-# ## - Tee kartat niista destinations per origin regioneista myös
-# ## - Isommat vuosiluvut 2018/2020 karttoihin
-
-# In[14]:
+# In[11]:
 
 
 #k_range = range(2, 8) # Test k from 2 to 8
@@ -337,11 +325,11 @@ g.fig.suptitle("Normalized Shannon entropy per cluster", y=1.02)
 #axes[1].grid(True)
 
 
-# ## Pre- and post-Covid-19
-# Dividing the dataframe, resulting in one df with the years 2014-2019 (pre-Covid) and one with the years 2020-2022 (post-Covid). Finding out the optimal K for both, using the Normalized Shannon entropy values.
+# # Pre- and post-Covid-19
+# Dividing the dataframe, resulting in one df with the years 2014-2019 (pre-Covid) and one with the years 2020-2022 (post-Covid). Finding out the optimal K for both, using the Normalized Shannon entropy values. After K values, clustering.
 # ### Origins per destination
 
-# In[19]:
+# In[12]:
 
 
 # Origins per destinations with years 2014–2019
@@ -351,7 +339,7 @@ opd_2014_2019 = opd[opd['year'].between(2014, 2019)]
 opd_2020_2022 = opd[opd['year'].between(2020, 2022)]
 
 
-# In[20]:
+# In[13]:
 
 
 # Pivot the data
@@ -369,10 +357,10 @@ silhouette_scores_pre = []
 silhouette_scores_post = []
 
 
-# In[21]:
+# In[14]:
 
 
-# Finding out the optimal K
+# Finding out the optimal K, pre-covid origins
 k_range = range(2, 8) # Test k from 2 to 8
 print('Starting...')
 for k in k_range:
@@ -388,10 +376,10 @@ for k in k_range:
         
 
 
-# In[24]:
+# In[15]:
 
 
-# plot elbow method inertias
+# plot elbow method inertias, pre-covid origins
 print('Plotting elbow methods...')
 fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(10, 5))
 axes[0].plot(k_range, wcss_pre, marker='o', linestyle='--')
@@ -408,15 +396,15 @@ axes[1].set_xlabel('Number of Clusters (k)')
 axes[1].set_ylabel('Average Silhouette Score')
 axes[1].grid(True)
 
-#plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/ElbowSilhouette_preCov_opd_normsha.png',
-            #dpi=500, bbox_inches='tight')
+plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/ElbowSilhouette_preCov_opd_normsha.png',
+            dpi=500, bbox_inches='tight')
     
 
 
-# In[30]:
+# In[16]:
 
 
-# Finding out the optimal K, post-covid
+# Finding out the optimal K, post-covid origins
 k_range = range(2, 8) # Test k from 2 to 8
 print('Starting...')
 for k in k_range:
@@ -431,10 +419,10 @@ for k in k_range:
         silhouette_scores_post.append(score)
 
 
-# In[31]:
+# In[17]:
 
 
-# plot elbow method inertias
+# plot elbow method inertias, post-covid origins
 print('Plotting elbow methods...')
 fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(10, 5))
 axes[0].plot(k_range, wcss_post, marker='o', linestyle='--')
@@ -453,12 +441,13 @@ axes[1].grid(True)
 
 plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/ElbowSilhouette_postCov_opd_normsha.png',
             dpi=500, bbox_inches='tight')
+    
 
 
-# In[29]:
+# In[18]:
 
 
-"""Clustering pre-Covid"""
+"""Clustering pre-Covid, origins"""
 
 # initiate the model
 print("Initializing model")
@@ -472,7 +461,7 @@ clusters = model.fit_predict(pivot_df_pre)
 silhs = silhouette_samples(cdist_dtw(pivot_df_pre), clusters, metric='precomputed')
 
 # create empty dataframe for silhouette scores
-sco_df = pd.DataFrame()
+sco_df_opd_pre = pd.DataFrame()
 
 # loop over cluster count
 print("Calculating silhouette scores..")
@@ -482,8 +471,8 @@ for label in range(4):
         score = silhs[clusters == label].mean()
         
         # put into dataframe
-        sco_df.at[label, 'cluster'] = label
-        sco_df.at[label, 'score'] = score
+        sco_df_opd_pre.at[label, 'cluster'] = label
+        sco_df_opd_pre.at[label, 'score'] = score
     
 # Add cluster labels to the DataFrame
 pivot_df_pre['cluster'] = clusters
@@ -504,16 +493,104 @@ g = sns.lmplot(data=opd_2014_2019, x='year', y='norm_shannon', hue='cluster',
                height=6, aspect=1.2, order=1, scatter=False)
 
 g.set_axis_labels("Year", "Normalized Shannon Entropy")
-g.fig.suptitle("Normalized Shannon entropy per cluster", y=1.02)
+g.fig.suptitle("Normalized Shannon entropy per cluster, origins per destination regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_preCov_normsha.png',
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_opd_normsha.png',
           dpi=500, bbox_inches='tight')
+
+
+# In[19]:
+
+
+# Checking the silhouette scores per cluster
+sco_df_opd_pre
+
+
+# In[34]:
+
+
+# Counting the number of unique NUTS3 per cluster
+nuts3_per_cluster_opd_pre = opd_2014_2019.groupby('cluster')['NUTS3'].nunique().reset_index()
+nuts3_per_cluster_opd_pre.columns = ['cluster', 'unique_NUTS3_count']
+nuts3_per_cluster_opd_pre
+
+
+# In[20]:
+
+
+"""Clustering post-Covid, origins"""
+
+# initiate the model
+print("Initializing model")
+model = TimeSeriesKMeans(n_clusters=4, metric="dtw", n_init=15, max_iter=42, random_state=42)
+
+# fit the model
+print("Fitting model")
+clusters = model.fit_predict(pivot_df_post)
+    
+# get silhouette scores
+silhs = silhouette_samples(cdist_dtw(pivot_df_post), clusters, metric='precomputed')
+
+# create empty dataframe for silhouette scores
+sco_df_opd_post = pd.DataFrame()
+
+# loop over cluster count
+print("Calculating silhouette scores..")
+for label in range(4):
+        
+        # get silhouette score for current cluser
+        score = silhs[clusters == label].mean()
+        
+        # put into dataframe
+        sco_df_opd_post.at[label, 'cluster'] = label
+        sco_df_opd_post.at[label, 'score'] = score
+    
+# Add cluster labels to the DataFrame
+pivot_df_post['cluster'] = clusters
+    
+# create a copy of dataframe
+nudf = pivot_df_post.reset_index()
+
+# create dictionary of NUTS 3 codes and cluster labels
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+
+# assign cluster labels to NUTS 3 region polygons
+print("Assigning clusters to original data")
+opd_2020_2022['cluster'] = opd_2020_2022['NUTS3'].apply(lambda x: clusterd[x])
+
+# Plot
+print("Plotting")
+g = sns.lmplot(data=opd_2020_2022, x='year', y='norm_shannon', hue='cluster', 
+               height=6, aspect=1.2, order=1, scatter=False)
+
+g.set_axis_labels("Year", "Normalized Shannon Entropy")
+g.fig.suptitle("Normalized Shannon entropy per cluster, origins per destination regions", y=1.02)
+
+# Save the plot
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_normsha_opd.png',
+          dpi=500, bbox_inches='tight')
+
+
+# In[21]:
+
+
+# Checking the silhouette scores per cluster
+sco_df_opd_post
+
+
+# In[33]:
+
+
+# Counting the number of unique NUTS3 per cluster
+nuts3_per_cluster_opd_post = opd_2020_2022.groupby('cluster')['NUTS3'].nunique().reset_index()
+nuts3_per_cluster_opd_post.columns = ['cluster', 'unique_NUTS3_count']
+nuts3_per_cluster_opd_post
 
 
 # ### Destinations per origins
 
-# In[25]:
+# In[22]:
 
 
 # Destinations per origins with years 2014–2019
@@ -523,7 +600,7 @@ dpo_2014_2019 = dpo[dpo['year'].between(2014, 2019)]
 dpo_2020_2022 = dpo[dpo['year'].between(2020, 2022)]
 
 
-# In[26]:
+# In[23]:
 
 
 # Pivot the data
@@ -541,7 +618,7 @@ silhouette_scores_pred = []
 silhouette_scores_postd = []
 
 
-# In[27]:
+# In[24]:
 
 
 # Finding out the optimal K
@@ -560,7 +637,7 @@ for k in k_range:
         
 
 
-# In[28]:
+# In[25]:
 
 
 # plot elbow method inertias
@@ -584,7 +661,7 @@ plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/ElbowSilh
             dpi=500, bbox_inches='tight')
 
 
-# In[32]:
+# In[26]:
 
 
 """Clustering pre-Covid, destinations"""
@@ -601,7 +678,7 @@ clusters = model.fit_predict(pivot_df_pred)
 silhs = silhouette_samples(cdist_dtw(pivot_df_pred), clusters, metric='precomputed')
 
 # create empty dataframe for silhouette scores
-sco_df = pd.DataFrame()
+sco_df_dpo_pre = pd.DataFrame()
 
 # loop over cluster count
 print("Calculating silhouette scores..")
@@ -611,8 +688,8 @@ for label in range(4):
         score = silhs[clusters == label].mean()
         
         # put into dataframe
-        sco_df.at[label, 'cluster'] = label
-        sco_df.at[label, 'score'] = score
+        sco_df_dpo_pre.at[label, 'cluster'] = label
+        sco_df_dpo_pre.at[label, 'score'] = score
     
 # Add cluster labels to the DataFrame
 pivot_df_pred['cluster'] = clusters
@@ -633,11 +710,99 @@ g = sns.lmplot(data=dpo_2014_2019, x='year', y='norm_shannon', hue='cluster',
                height=6, aspect=1.2, order=1, scatter=False)
 
 g.set_axis_labels("Year", "Normalized Shannon Entropy")
-g.fig.suptitle("Normalized Shannon entropy per cluster, destinations per origin", y=1.02)
+g.fig.suptitle("Normalized Shannon entropy per cluster, destinations per origin regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_preCov_dest_normsha.png',
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_normsha_dpo.png',
           dpi=500, bbox_inches='tight')
+
+
+# In[27]:
+
+
+# Checking the silhouette scores per cluster
+sco_df_dpo_pre
+
+
+# In[32]:
+
+
+# Counting the number of unique NUTS3 per cluster
+nuts3_per_cluster_dpo_pre = dpo_2014_2019.groupby('cluster')['NUTS3'].nunique().reset_index()
+nuts3_per_cluster_dpo_pre.columns = ['cluster', 'unique_NUTS3_count']
+nuts3_per_cluster_dpo_pre
+
+
+# In[28]:
+
+
+"""Clustering post-Covid, destinations"""
+
+# initiate the model
+print("Initializing model")
+model = TimeSeriesKMeans(n_clusters=4, metric="dtw", n_init=15, max_iter=42, random_state=42)
+
+# fit the model
+print("Fitting model")
+clusters = model.fit_predict(pivot_df_postd)
+    
+# get silhouette scores
+silhs = silhouette_samples(cdist_dtw(pivot_df_postd), clusters, metric='precomputed')
+
+# create empty dataframe for silhouette scores
+sco_df_dpo_post = pd.DataFrame()
+
+# loop over cluster count
+print("Calculating silhouette scores..")
+for label in range(4):
+        
+        # get silhouette score for current cluser
+        score = silhs[clusters == label].mean()
+        
+        # put into dataframe
+        sco_df_dpo_post.at[label, 'cluster'] = label
+        sco_df_dpo_post.at[label, 'score'] = score
+    
+# Add cluster labels to the DataFrame
+pivot_df_postd['cluster'] = clusters
+    
+# create a copy of dataframe
+nudf = pivot_df_postd.reset_index()
+
+# create dictionary of NUTS 3 codes and cluster labels
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+
+# assign cluster labels to NUTS 3 region polygons
+print("Assigning clusters to original data")
+dpo_2020_2022['cluster'] = dpo_2020_2022['NUTS3'].apply(lambda x: clusterd[x])
+
+# Plot
+print("Plotting")
+g = sns.lmplot(data=dpo_2020_2022, x='year', y='norm_shannon', hue='cluster', 
+               height=6, aspect=1.2, order=1, scatter=False)
+
+g.set_axis_labels("Year", "Normalized Shannon Entropy")
+g.fig.suptitle("Normalized Shannon entropy per cluster, destinations per origin regions", y=1.02)
+
+# Save the plot
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_normsha_dpo.png',
+          dpi=500, bbox_inches='tight')
+
+
+# In[29]:
+
+
+# Checking the silhouette scores per cluster
+sco_df_dpo_post
+
+
+# In[31]:
+
+
+# Counting the number of unique NUTS3 per cluster
+nuts3_per_cluster_dpo_post = dpo_2020_2022.groupby('cluster')['NUTS3'].nunique().reset_index()
+nuts3_per_cluster_dpo_post.columns = ['cluster', 'unique_NUTS3_count']
+nuts3_per_cluster_dpo_post
 
 
 # In[ ]:
