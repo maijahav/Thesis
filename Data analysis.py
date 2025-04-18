@@ -192,68 +192,65 @@ for i, row in dpo.iterrows():
 
 # ## Clustering
 
-# ### Years 2014-2022
+# ## Years 2014-2022
+# ### Origins per destinations
 
-# In[8]:
+# In[161]:
 
 
 # Pivoting the data
-#pivot_df = opd.pivot(index='NUTS3', columns='year', values='norm_shannon') # Origins per destinations
-    
+pivot_df = opd.pivot(index='NUTS3', columns='year', values='norm_shannon') # Origins per destinations
+   
 # Handling missing values (filling with 0 for simplicity)
-#pivot_df = pivot_df.fillna(0.0)
+pivot_df = pivot_df.fillna(0.0)
 
 # Creating lists for silhouettes scores and inertias
-#wcss = []
-#silhouette_scores = []
-
-#pivot_df
+wcss = []
+silhouette_scores = []
 
 
-# In[9]:
+# In[ ]:
 
 
-# Scaling the data if "pivot_df" doesnt work
-#scaler = StandardScaler()
-#scaled_data = scaler.fit_transform(pivot_df)
+"""Clustering"""
 
 # Initiating the model
-#print("Initializing model")
-#model = TimeSeriesKMeans(n_clusters=6, metric="dtw", n_init=15, max_iter=42, random_state=42)
+print("Initializing model")
+model = TimeSeriesKMeans(n_clusters=6, metric="dtw", n_init=15, max_iter=42, random_state=42)
 
 # Fitting the model
-#print("Fitting model")
-#clusters = model.fit_predict(pivot_df)
+print("Fitting model")
+clusters = model.fit_predict(pivot_df)
     
 # Getting silhouette scores
-#silhs = silhouette_samples(cdist_dtw(pivot_df), clusters, metric='precomputed')
+silhs = silhouette_samples(cdist_dtw(pivot_df), clusters, metric='precomputed')
 
 # Creating an empty dataframe for silhouette scores
-#sco_df = pd.DataFrame()
+sco_df = pd.DataFrame()
 
 # Looping over cluster count
-#print("Calculating silhouette scores..")
-#for label in range(6):
+print("Calculating silhouette scores..")
+for label in range(6):
         
         # Getting silhouette score for current cluser
-        #score = silhs[clusters == label].mean()
+        score = silhs[clusters == label].mean()
         
         # Putting the score into dataframe
-        #sco_df.at[label, 'cluster'] = label
-        #sco_df.at[label, 'score'] = score
+        sco_df.at[label, 'cluster'] = label
+        sco_df.at[label, 'score'] = score
     
 # Adding cluster labels to the DataFrame
-#pivot_df['cluster'] = clusters
+pivot_df['cluster'] = clusters
     
 # Creating a copy of dataframe
-#nudf = pivot_df.reset_index()
+nudf = pivot_df.reset_index()
 
 # Creating a dictionary of NUTS 3 codes and cluster labels
-#clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
 
 # Assigning cluster labels to NUTS 3 region polygons
-#print("Assigning clusters to original data")
-#opd['cluster'] = opd['NUTS3'].apply(lambda x: clusterd[x])
+print("Assigning clusters to original data")
+opd['cluster'] = opd['NUTS3'].apply(lambda x: clusterd[x])
 
 # Plotting
 #print("Plotting")
@@ -268,30 +265,240 @@ for i, row in dpo.iterrows():
           #dpi=500, bbox_inches='tight')
 
 
-# In[10]:
+# In[ ]:
 
 
-#orange_shades = ['#ffe5b4',  # light peach
-                 #'#ffcc80',  # light orange
-                 #'#ff9900',  # standard orange
-                 #'#cc6600']  # darker burnt orange
+"""Making sure the cluster labels match"""
 
-#plt.figure(figsize=(10, 6))
-#print("Plotting with orange shades")
+# Step 1: Calculate mean entropy per region
+pivot_df['mean_entropy'] = pivot_df[[2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]].mean(axis=1)
 
-#for i, cluster in enumerate(sorted(opd['cluster'].unique())):
-    #subset = opd[opd['cluster'] == cluster]
-    #sns.regplot(data=subset, x='year', y='norm_shannon', 
-                #scatter=False, order=1, label=f'Cluster {cluster}', color=orange_shades[i])
+# Step 2: Calculate average entropy per cluster
+entropy_by_cluster = pivot_df.groupby('cluster')['mean_entropy'].mean().reset_index()
 
-#plt.title("Normalized Shannon entropy per cluster, origin regions per destination")
-#plt.xlabel("Year")
-#plt.ylabel("Normalized Shannon Entropy")
-#plt.legend(title='Cluster')
+# Step 3: Sort clusters by average entropy
+entropy_by_cluster = entropy_by_cluster.sort_values('mean_entropy').reset_index(drop=True)
 
-#plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_orange_k6.png',
-            #dpi=500, bbox_inches='tight')
-#plt.show()
+# Step 4: Create remapping dictionary (lowest entropy = 0, highest = 3)
+label_remap = {row['cluster']: new_label for new_label, row in entropy_by_cluster.iterrows()}
+
+# Step 5: Apply remapping
+pivot_df['cluster'] = pivot_df['cluster'].map(label_remap)
+
+# Step 6: Update downstream cluster dict
+nudf = pivot_df.reset_index()
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+opd['cluster'] = opd['NUTS3'].apply(lambda x: clusterd[x])
+
+# Add descriptive labels
+cluster_labels = {
+    0: "poorly integrated",
+    1: "less integrated",
+    2: "moderately integrated",
+    3: "highly integrated"
+}
+pivot_df['integration_level'] = pivot_df['cluster'].map(cluster_labels)
+opd['integration_level'] = opd['cluster'].map(cluster_labels)
+
+
+# In[ ]:
+
+
+"""Enhancing the plot"""
+# Defining cluster names
+cluster_names = {
+    0: "0. Poorly integrated",
+    1: "1. Less integrated",
+    2: "2. Moderately integrated",
+    3: "3. Highly integrated"
+}
+# Get cluster descriptions in order by cluster number
+cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
+
+# Adding a 'cluster_name' column
+opd['Cluster description'] = opd['cluster'].map(cluster_names)
+
+# Plotting
+print("Plotting")
+g = sns.lmplot(data=opd, x='year', y='norm_shannon', hue='Cluster description', hue_order=cluster_order,
+               height=6, aspect=1.2, order=1, scatter=False)
+
+g.set_axis_labels("Year", "Normalized Shannon Entropy")
+g.fig.suptitle("Normalized Shannon entropy per cluster, origins per destination regions", y=1.02)
+
+# Save the plot
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_all_opd_normsha.png',
+          dpi=500, bbox_inches='tight')
+
+
+# In[ ]:
+
+
+# Checking the silhouette scores per cluster
+sco_df
+
+
+# In[ ]:
+
+
+# Counting the number of unique NUTS3 per cluster
+nuts3_per_cluster_opd = opd.groupby('cluster')['NUTS3'].nunique().reset_index()
+nuts3_per_cluster_opd.columns = ['cluster', 'unique_NUTS3_count']
+nuts3_per_cluster_opd
+
+
+# ### Destinations per origin regions
+
+# In[ ]:
+
+
+# Pivoting the data
+pivot_df_d = dpo.pivot(index='NUTS3', columns='year', values='norm_shannon') # Destinations per origins
+   
+# Handling missing values (filling with 0 for simplicity)
+pivot_df_d = pivot_df_d.fillna(0.0)
+
+# Creating lists for silhouettes scores and inertias
+wcss_d = []
+silhouette_scores_d = []
+
+
+# In[ ]:
+
+
+"""Clustering"""
+
+# Initiating the model
+print("Initializing model")
+model = TimeSeriesKMeans(n_clusters=6, metric="dtw", n_init=15, max_iter=42, random_state=42)
+
+# Fitting the model
+print("Fitting model")
+clusters = model.fit_predict(pivot_df_d)
+    
+# Getting silhouette scores
+silhs = silhouette_samples(cdist_dtw(pivot_df_d), clusters, metric='precomputed')
+
+# Creating an empty dataframe for silhouette scores
+sco_df_d = pd.DataFrame()
+
+# Looping over cluster count
+print("Calculating silhouette scores..")
+for label in range(6):
+        
+        # Getting silhouette score for current cluser
+        score = silhs[clusters == label].mean()
+        
+        # Putting the score into dataframe
+        sco_df_d.at[label, 'cluster'] = label
+        sco_df_d.at[label, 'score'] = score
+    
+# Adding cluster labels to the DataFrame
+pivot_df_d['cluster'] = clusters
+    
+# Creating a copy of dataframe
+nudf = pivot_df_d.reset_index()
+
+# Creating a dictionary of NUTS 3 codes and cluster labels
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+
+# Assigning cluster labels to NUTS 3 region polygons
+print("Assigning clusters to original data")
+dpo['cluster'] = dpo['NUTS3'].apply(lambda x: clusterd[x])
+
+# Plotting
+#print("Plotting")
+#g = sns.lmplot(data=opd, x='year', y='norm_shannon', hue='cluster', 
+               #height=6, aspect=1.2, order=1, scatter=False)
+
+#g.set_axis_labels("Year", "Normalized Shannon Entropy")
+#g.fig.suptitle("Normalized Shannon entropy per cluster", y=1.02)
+
+# Saving the plot
+#g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/Cluster_trends_k6.png',
+          #dpi=500, bbox_inches='tight')
+
+
+# In[ ]:
+
+
+"""Making sure the cluster labels match"""
+
+# Step 1: Calculate mean entropy per region
+pivot_df_d['mean_entropy'] = pivot_df_d[[2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]].mean(axis=1)
+
+# Step 2: Calculate average entropy per cluster
+entropy_by_cluster = pivot_df_d.groupby('cluster')['mean_entropy'].mean().reset_index()
+
+# Step 3: Sort clusters by average entropy
+entropy_by_cluster = entropy_by_cluster.sort_values('mean_entropy').reset_index(drop=True)
+
+# Step 4: Create remapping dictionary (lowest entropy = 0, highest = 3)
+label_remap = {row['cluster']: new_label for new_label, row in entropy_by_cluster.iterrows()}
+
+# Step 5: Apply remapping
+pivot_df_d['cluster'] = pivot_df_d['cluster'].map(label_remap)
+
+# Step 6: Update downstream cluster dict
+nudf = pivot_df_d.reset_index()
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+dpo['cluster'] = dpo['NUTS3'].apply(lambda x: clusterd[x])
+
+# Add descriptive labels
+cluster_labels = {
+    0: "poorly integrated",
+    1: "less integrated",
+    2: "moderately integrated",
+    3: "highly integrated"
+}
+pivot_df_d['integration_level'] = pivot_df_d['cluster'].map(cluster_labels)
+dpo['integration_level'] = dpo['cluster'].map(cluster_labels)
+
+
+# In[ ]:
+
+
+"""Enhancing the plot"""
+# Defining cluster names
+cluster_names = {
+    0: "0. Poorly integrated",
+    1: "1. Less integrated",
+    2: "2. Moderately integrated",
+    3: "3. Highly integrated"
+}
+# Get cluster descriptions in order by cluster number
+cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
+
+# Adding a 'cluster_name' column
+dpo['Cluster description'] = dpo['cluster'].map(cluster_names)
+
+# Plotting
+print("Plotting")
+g = sns.lmplot(data=dpo, x='year', y='norm_shannon', hue='Cluster description', hue_order=cluster_order,
+               height=6, aspect=1.2, order=1, scatter=False)
+
+g.set_axis_labels("Year", "Normalized Shannon Entropy")
+g.fig.suptitle("Normalized Shannon entropy per cluster, destinations per origin regions", y=1.02)
+
+# Save the plot
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_all_dpo_normsha.png',
+          dpi=500, bbox_inches='tight')
+
+
+# In[ ]:
+
+
+# Checking the silhouette scores per cluster
+sco_df_d
+
+
+# In[ ]:
+
+
+# Counting the number of unique NUTS3 per cluster
+nuts3_per_cluster_dpo = dpo.groupby('cluster')['NUTS3'].nunique().reset_index()
+nuts3_per_cluster_dpo.columns = ['cluster', 'unique_NUTS3_count']
+nuts3_per_cluster_dpo
 
 
 # In[11]:
