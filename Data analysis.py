@@ -329,7 +329,7 @@ for i, row in dpo.iterrows():
 # Dividing the dataframe, resulting in one df with the years 2014-2019 (pre-Covid) and one with the years 2020-2022 (post-Covid). Finding out the optimal K for both, using the Normalized Shannon entropy values. After K values, clustering.
 # ### Origins per destination
 
-# In[12]:
+# In[61]:
 
 
 # Origins per destinations with years 2014–2019
@@ -339,7 +339,7 @@ opd_2014_2019 = opd[opd['year'].between(2014, 2019)]
 opd_2020_2022 = opd[opd['year'].between(2020, 2022)]
 
 
-# In[13]:
+# In[62]:
 
 
 # Pivot the data
@@ -444,7 +444,7 @@ plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/ElbowSilh
     
 
 
-# In[18]:
+# In[63]:
 
 
 """Clustering pre-Covid, origins"""
@@ -496,18 +496,85 @@ g.set_axis_labels("Year", "Normalized Shannon Entropy")
 g.fig.suptitle("Normalized Shannon entropy per cluster, origins per destination regions", y=1.02)
 
 # Save the plot
+#g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_opd_normsha.png',
+          #dpi=500, bbox_inches='tight')
+    
+
+
+# In[137]:
+
+
+"""Making sure the cluster labels match"""
+
+# Step 1: Calculate mean entropy per region
+pivot_df_pre['mean_entropy'] = pivot_df_pre[[2014, 2015, 2016, 2017, 2018, 2019]].mean(axis=1)
+
+# Step 2: Calculate average entropy per cluster
+entropy_by_cluster = pivot_df_pre.groupby('cluster')['mean_entropy'].mean().reset_index()
+
+# Step 3: Sort clusters by average entropy
+entropy_by_cluster = entropy_by_cluster.sort_values('mean_entropy').reset_index(drop=True)
+
+# Step 4: Create remapping dictionary (lowest entropy = 0, highest = 3)
+label_remap = {row['cluster']: new_label for new_label, row in entropy_by_cluster.iterrows()}
+
+# Step 5: Apply remapping
+pivot_df_pre['cluster'] = pivot_df_pre['cluster'].map(label_remap)
+
+# Step 6: Update downstream cluster dict
+nudf = pivot_df_pre.reset_index()
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+opd_2014_2019['cluster'] = opd_2014_2019['NUTS3'].apply(lambda x: clusterd[x])
+
+# Add descriptive labels
+cluster_labels = {
+    0: "poorly integrated",
+    1: "less integrated",
+    2: "moderately integrated",
+    3: "highly integrated"
+}
+pivot_df_pre['integration_level'] = pivot_df_pre['cluster'].map(cluster_labels)
+opd_2014_2019['integration_level'] = opd_2014_2019['cluster'].map(cluster_labels)
+
+
+# In[138]:
+
+
+"""Enhancing the plot"""
+# Defining cluster names
+cluster_names = {
+    0: "0. Poorly integrated",
+    1: "1. Less integrated",
+    2: "2. Moderately integrated",
+    3: "3. Highly integrated"
+}
+# Get cluster descriptions in order by cluster number
+cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
+
+# Adding a 'cluster_name' column
+opd_2014_2019['Cluster description'] = opd_2014_2019['cluster'].map(cluster_names)
+
+# Plotting
+print("Plotting")
+g = sns.lmplot(data=opd_2014_2019, x='year', y='norm_shannon', hue='Cluster description', hue_order=cluster_order,
+               height=6, aspect=1.2, order=1, scatter=False)
+
+g.set_axis_labels("Year", "Normalized Shannon Entropy")
+g.fig.suptitle("Normalized Shannon entropy per cluster, pre-Covid-19 origins per destination regions", y=1.02)
+
+# Save the plot
 g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_opd_normsha.png',
           dpi=500, bbox_inches='tight')
 
 
-# In[19]:
+# In[139]:
 
 
 # Checking the silhouette scores per cluster
 sco_df_opd_pre
 
 
-# In[34]:
+# In[140]:
 
 
 # Counting the number of unique NUTS3 per cluster
@@ -516,7 +583,13 @@ nuts3_per_cluster_opd_pre.columns = ['cluster', 'unique_NUTS3_count']
 nuts3_per_cluster_opd_pre
 
 
-# In[20]:
+# In[141]:
+
+
+pivot_df_post
+
+
+# In[68]:
 
 
 """Clustering post-Covid, origins"""
@@ -560,26 +633,94 @@ print("Assigning clusters to original data")
 opd_2020_2022['cluster'] = opd_2020_2022['NUTS3'].apply(lambda x: clusterd[x])
 
 # Plot
-print("Plotting")
-g = sns.lmplot(data=opd_2020_2022, x='year', y='norm_shannon', hue='cluster', 
-               height=6, aspect=1.2, order=1, scatter=False)
+#print("Plotting")
+#g = sns.lmplot(data=opd_2020_2022, x='year', y='norm_shannon', hue='cluster', 
+               #height=6, aspect=1.2, order=1, scatter=False)
 
-g.set_axis_labels("Year", "Normalized Shannon Entropy")
-g.fig.suptitle("Normalized Shannon entropy per cluster, origins per destination regions", y=1.02)
+#g.set_axis_labels("Year", "Normalized Shannon Entropy")
+#g.fig.suptitle("Normalized Shannon entropy per cluster, origins per destination regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_normsha_opd.png',
+#g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_normsha_opd.png',
+          #dpi=500, bbox_inches='tight')
+
+
+# In[129]:
+
+
+"""Making sure the cluster labels match"""
+
+# Step 1: Calculate mean entropy per region
+pivot_df_post['mean_entropy'] = pivot_df_post[[2020, 2021, 2022]].mean(axis=1)
+
+# Step 2: Calculate average entropy per cluster
+entropy_by_cluster = pivot_df_post.groupby('cluster')['mean_entropy'].mean().reset_index()
+
+# Step 3: Sort clusters by average entropy
+entropy_by_cluster = entropy_by_cluster.sort_values('mean_entropy').reset_index(drop=True)
+
+# Step 4: Create remapping dictionary (lowest entropy = 0, highest = 3)
+label_remap = {row['cluster']: new_label for new_label, row in entropy_by_cluster.iterrows()}
+
+# Step 5: Apply remapping
+pivot_df_post['cluster'] = pivot_df_post['cluster'].map(label_remap)
+
+# Step 6: Update downstream cluster dict
+nudf = pivot_df_post.reset_index()
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+opd_2020_2022['cluster'] = opd_2020_2022['NUTS3'].apply(lambda x: clusterd[x])
+
+# Add descriptive labels
+cluster_labels = {
+    0: "poorly integrated",
+    1: "less integrated",
+    2: "moderately integrated",
+    3: "highly integrated"
+}
+pivot_df_post['integration_level'] = pivot_df_post['cluster'].map(cluster_labels)
+opd_2020_2022['integration_level'] = opd_2020_2022['cluster'].map(cluster_labels)
+
+
+# In[130]:
+
+
+"""Enhancing the plot"""
+# Defining cluster names
+cluster_names = {
+    0: "0. Poorly integrated",
+    1: "1. Less integrated",
+    2: "2. Moderately integrated",
+    3: "3. Highly integrated"
+}
+# Get cluster descriptions in order by cluster number
+cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
+
+# Adding a 'cluster_name' column
+opd_2020_2022['Cluster description'] = opd_2020_2022['cluster'].map(cluster_names)
+
+# Plotting
+print("Plotting")
+g = sns.lmplot(
+    data=opd_2020_2022, x='year', y='norm_shannon', hue='Cluster description',hue_order=cluster_order,
+    height=6, aspect=1.2, order=1, scatter=False, ci=None
+).set(xlim=(2019.5, 2022.5), xticks=[2020, 2021, 2022])
+
+g.set_axis_labels("Year", "Normalized Shannon Entropy")
+g.fig.suptitle("Normalized Shannon entropy per cluster, post-Covid-19 origins per destination regions", y=1.02)
+
+# Save the plot
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_opd_normsha.png',
           dpi=500, bbox_inches='tight')
 
 
-# In[21]:
+# In[131]:
 
 
 # Checking the silhouette scores per cluster
 sco_df_opd_post
 
 
-# In[33]:
+# In[132]:
 
 
 # Counting the number of unique NUTS3 per cluster
@@ -590,7 +731,7 @@ nuts3_per_cluster_opd_post
 
 # ### Destinations per origins
 
-# In[22]:
+# In[73]:
 
 
 # Destinations per origins with years 2014–2019
@@ -600,7 +741,7 @@ dpo_2014_2019 = dpo[dpo['year'].between(2014, 2019)]
 dpo_2020_2022 = dpo[dpo['year'].between(2020, 2022)]
 
 
-# In[23]:
+# In[74]:
 
 
 # Pivot the data
@@ -661,7 +802,7 @@ plt.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/ElbowSilh
             dpi=500, bbox_inches='tight')
 
 
-# In[26]:
+# In[75]:
 
 
 """Clustering pre-Covid, destinations"""
@@ -705,26 +846,93 @@ print("Assigning clusters to original data")
 dpo_2014_2019['cluster'] = dpo_2014_2019['NUTS3'].apply(lambda x: clusterd[x])
 
 # Plot
+#print("Plotting")
+#g = sns.lmplot(data=dpo_2014_2019, x='year', y='norm_shannon', hue='cluster', 
+               #height=6, aspect=1.2, order=1, scatter=False)
+
+#g.set_axis_labels("Year", "Normalized Shannon Entropy")
+#g.fig.suptitle("Normalized Shannon entropy per cluster, destinations per origin regions", y=1.02)
+
+# Save the plot
+#g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_normsha_dpo.png',
+          #dpi=500, bbox_inches='tight')
+    
+
+
+# In[126]:
+
+
+"""Making sure the cluster labels match"""
+
+# Step 1: Calculate mean entropy per region
+pivot_df_pred['mean_entropy'] = pivot_df_pred[[2014, 2015, 2016, 2017, 2018, 2019]].mean(axis=1)
+
+# Step 2: Calculate average entropy per cluster
+entropy_by_cluster = pivot_df_pred.groupby('cluster')['mean_entropy'].mean().reset_index()
+
+# Step 3: Sort clusters by average entropy
+entropy_by_cluster = entropy_by_cluster.sort_values('mean_entropy').reset_index(drop=True)
+
+# Step 4: Create remapping dictionary (lowest entropy = 0, highest = 3)
+label_remap = {row['cluster']: new_label for new_label, row in entropy_by_cluster.iterrows()}
+
+# Step 5: Apply remapping
+pivot_df_pred['cluster'] = pivot_df_pred['cluster'].map(label_remap)
+
+# Step 6: Update downstream cluster dict
+nudf = pivot_df_pred.reset_index()
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+dpo_2014_2019['cluster'] = dpo_2014_2019['NUTS3'].apply(lambda x: clusterd[x])
+
+# Add descriptive labels
+cluster_labels = {
+    0: "poorly integrated",
+    1: "less integrated",
+    2: "moderately integrated",
+    3: "highly integrated"
+}
+pivot_df_pred['integration_level'] = pivot_df_pred['cluster'].map(cluster_labels)
+dpo_2014_2019['integration_level'] = dpo_2014_2019['cluster'].map(cluster_labels)
+
+
+# In[127]:
+
+
+"""Enhancing the plot"""
+# Defining cluster names
+cluster_names = {
+    0: "0. Poorly integrated",
+    1: "1. Less integrated",
+    2: "2. Moderately integrated",
+    3: "3. Highly integrated"
+}
+# Get cluster descriptions in order by cluster number
+cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
+
+# Adding a 'cluster_name' column
+dpo_2014_2019['Cluster description'] = dpo_2014_2019['cluster'].map(cluster_names)
+
+# Plotting
 print("Plotting")
-g = sns.lmplot(data=dpo_2014_2019, x='year', y='norm_shannon', hue='cluster', 
+g = sns.lmplot(data=dpo_2014_2019, x='year', y='norm_shannon', hue='Cluster description', hue_order=cluster_order,
                height=6, aspect=1.2, order=1, scatter=False)
 
 g.set_axis_labels("Year", "Normalized Shannon Entropy")
-g.fig.suptitle("Normalized Shannon entropy per cluster, destinations per origin regions", y=1.02)
+g.fig.suptitle("Normalized Shannon entropy per cluster, pre-Covid-19 destinations per origin regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_normsha_dpo.png',
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_dpo_normsha.png',
           dpi=500, bbox_inches='tight')
 
 
-# In[27]:
+# In[133]:
 
 
 # Checking the silhouette scores per cluster
 sco_df_dpo_pre
 
 
-# In[32]:
+# In[134]:
 
 
 # Counting the number of unique NUTS3 per cluster
@@ -733,7 +941,7 @@ nuts3_per_cluster_dpo_pre.columns = ['cluster', 'unique_NUTS3_count']
 nuts3_per_cluster_dpo_pre
 
 
-# In[28]:
+# In[79]:
 
 
 """Clustering post-Covid, destinations"""
@@ -756,7 +964,7 @@ sco_df_dpo_post = pd.DataFrame()
 print("Calculating silhouette scores..")
 for label in range(4):
         
-        # get silhouette score for current cluser
+        # get silhouette score for current cluster
         score = silhs[clusters == label].mean()
         
         # put into dataframe
@@ -777,32 +985,175 @@ print("Assigning clusters to original data")
 dpo_2020_2022['cluster'] = dpo_2020_2022['NUTS3'].apply(lambda x: clusterd[x])
 
 # Plot
-print("Plotting")
-g = sns.lmplot(data=dpo_2020_2022, x='year', y='norm_shannon', hue='cluster', 
-               height=6, aspect=1.2, order=1, scatter=False)
+#print("Plotting")
+#g = sns.lmplot(data=dpo_2020_2022, x='year', y='norm_shannon', hue='cluster', 
+               #height=6, aspect=1.2, order=1, scatter=False)
 
-g.set_axis_labels("Year", "Normalized Shannon Entropy")
-g.fig.suptitle("Normalized Shannon entropy per cluster, destinations per origin regions", y=1.02)
+#g.set_axis_labels("Year", "Normalized Shannon Entropy")
+#g.fig.suptitle("Normalized Shannon entropy per cluster, destinations per origin regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_normsha_dpo.png',
+#g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_normsha_dpo.png',
+          #dpi=500, bbox_inches='tight')
+
+
+# In[120]:
+
+
+"""Making sure the cluster labels match"""
+
+# Step 1: Calculate mean entropy per region
+pivot_df_postd['mean_entropy'] = pivot_df_postd[[2020, 2021, 2022]].mean(axis=1)
+
+# Step 2: Calculate average entropy per cluster
+entropy_by_cluster = pivot_df_postd.groupby('cluster')['mean_entropy'].mean().reset_index()
+
+# Step 3: Sort clusters by average entropy
+entropy_by_cluster = entropy_by_cluster.sort_values('mean_entropy').reset_index(drop=True)
+
+# Step 4: Create remapping dictionary (lowest entropy = 0, highest = 3)
+label_remap = {row['cluster']: new_label for new_label, row in entropy_by_cluster.iterrows()}
+
+# Step 5: Apply remapping
+pivot_df_postd['cluster'] = pivot_df_postd['cluster'].map(label_remap)
+
+# Step 6: Update downstream cluster dict
+nudf = pivot_df_postd.reset_index()
+clusterd = dict(zip(nudf['NUTS3'], nudf['cluster']))
+dpo_2020_2022['cluster'] = dpo_2020_2022['NUTS3'].apply(lambda x: clusterd[x])
+
+# (Optional) Add descriptive labels
+cluster_labels = {
+    0: "poorly integrated",
+    1: "less integrated",
+    2: "moderately integrated",
+    3: "highly integrated"
+}
+pivot_df_postd['integration_level'] = pivot_df_postd['cluster'].map(cluster_labels)
+dpo_2020_2022['integration_level'] = dpo_2020_2022['cluster'].map(cluster_labels)
+
+
+# In[125]:
+
+
+"""Enhancing the plot"""
+# Defining cluster names
+cluster_names = {
+    0: "0. Poorly integrated",
+    1: "1. Less integrated",
+    2: "2. Moderately integrated",
+    3: "3. Highly integrated"
+}
+# Get cluster descriptions in order by cluster number
+cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
+
+# Now map it
+dpo_2020_2022['Cluster description'] = dpo_2020_2022['cluster'].map(cluster_names)
+
+# Plotting
+print("Plotting")
+g = sns.lmplot(
+    data=dpo_2020_2022, x='year', y='norm_shannon', hue='Cluster description',hue_order=cluster_order,
+    height=6, aspect=1.2, order=1, scatter=False, ci=None
+).set(xlim=(2019.5, 2022.5), xticks=[2020, 2021, 2022])
+
+g.set_axis_labels("Year", "Normalized Shannon Entropy")
+g.fig.suptitle("Normalized Shannon entropy per cluster, post-Covid-19 destinations per origin regions", y=1.02)
+
+# Save the plot
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_dpo_normsha.png',
           dpi=500, bbox_inches='tight')
 
 
-# In[29]:
+# In[135]:
 
 
 # Checking the silhouette scores per cluster
 sco_df_dpo_post
 
 
-# In[31]:
+# In[136]:
 
 
 # Counting the number of unique NUTS3 per cluster
 nuts3_per_cluster_dpo_post = dpo_2020_2022.groupby('cluster')['NUTS3'].nunique().reset_index()
 nuts3_per_cluster_dpo_post.columns = ['cluster', 'unique_NUTS3_count']
 nuts3_per_cluster_dpo_post
+
+
+# # Typology
+# ## Destinations per origin regions
+
+# In[144]:
+
+
+# Creating a dataframe with a cluster typology for each NUTS 3 region, destinations per origin regions
+pred = dpo_2014_2019.sort_values(by=['NUTS3', 'year']).groupby('NUTS3').last().reset_index() # Taking the last one
+pred = pred[['NUTS3', 'Cluster description']]
+pred = pred.rename(columns={'Cluster description': 'Pre-COVID Cluster'})
+
+postd = dpo_2020_2022.sort_values(by=['NUTS3', 'year']).groupby('NUTS3').last().reset_index() # Taking the last one
+postd = postd[['NUTS3', 'Cluster description']]
+postd = postd.rename(columns={'Cluster description': 'Post-COVID Cluster'})
+
+# Merge
+combined_dest = pd.merge(pred, postd, on='NUTS3', how='outer')
+
+
+# In[159]:
+
+
+# Create the 'typology' column by combining the cluster numbers from both columns
+combined_dest['typology'] = combined_dest.apply(
+    lambda row: f"{str(row['Pre-COVID Cluster'][0])}_{str(row['Post-COVID Cluster'][0])}" 
+    if pd.notna(row['Pre-COVID Cluster']) and pd.notna(row['Post-COVID Cluster']) 
+    else f"{str(row['Pre-COVID Cluster'][0])}_x" 
+    if pd.notna(row['Pre-COVID Cluster']) 
+    else f"x_{str(row['Post-COVID Cluster'][0])}" 
+    if pd.notna(row['Post-COVID Cluster']) 
+    else "x_x", axis=1
+)
+
+# Display the updated dataframe
+combined_dest[0:20]
+
+
+# ## Origins per destination regions
+
+# In[146]:
+
+
+# Creating a dataframe with a cluster typology for each NUTS 3 region, destinations per origin regions
+pre = opd_2014_2019.sort_values(by=['NUTS3', 'year']).groupby('NUTS3').last().reset_index() # Taking the last one
+pre = pre[['NUTS3', 'Cluster description']]
+pre = pre.rename(columns={'Cluster description': 'Pre-COVID Cluster'})
+
+post = opd_2020_2022.sort_values(by=['NUTS3', 'year']).groupby('NUTS3').last().reset_index() # Taking the last one
+post = post[['NUTS3', 'Cluster description']]
+post = post.rename(columns={'Cluster description': 'Post-COVID Cluster'})
+
+# Merge
+combined_orig = pd.merge(pre, post, on='NUTS3', how='outer')
+
+
+# In[160]:
+
+
+# Create the 'typology' column by combining the cluster numbers from both columns
+combined_orig['typology'] = combined_orig.apply(
+    lambda row: f"{str(row['Pre-COVID Cluster'][0])}_{str(row['Post-COVID Cluster'][0])}" 
+    if pd.notna(row['Pre-COVID Cluster']) and pd.notna(row['Post-COVID Cluster']) 
+    else f"{str(row['Pre-COVID Cluster'][0])}_x" 
+    if pd.notna(row['Pre-COVID Cluster']) 
+    else f"x_{str(row['Post-COVID Cluster'][0])}" 
+    if pd.notna(row['Post-COVID Cluster']) 
+    else "x_x", axis=1
+)
+
+combined_orig.to_csv('/Users/maijahavusela/Desktop/gradu/data/pythonista/OPD_typology_pre_post.csv')
+
+# Display the updated dataframe
+combined_orig[0:20]
 
 
 # In[ ]:
