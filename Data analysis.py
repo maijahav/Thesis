@@ -195,7 +195,7 @@ for i, row in dpo.iterrows():
 # ## Years 2014-2022
 # ### Origins per destinations
 
-# In[161]:
+# In[173]:
 
 
 # Pivoting the data
@@ -209,14 +209,14 @@ wcss = []
 silhouette_scores = []
 
 
-# In[ ]:
+# In[174]:
 
 
 """Clustering"""
 
 # Initiating the model
 print("Initializing model")
-model = TimeSeriesKMeans(n_clusters=6, metric="dtw", n_init=15, max_iter=42, random_state=42)
+model = TimeSeriesKMeans(n_clusters=4, metric="dtw", n_init=15, max_iter=42, random_state=42)
 
 # Fitting the model
 print("Fitting model")
@@ -230,7 +230,7 @@ sco_df = pd.DataFrame()
 
 # Looping over cluster count
 print("Calculating silhouette scores..")
-for label in range(6):
+for label in range(4):
         
         # Getting silhouette score for current cluser
         score = silhs[clusters == label].mean()
@@ -265,7 +265,7 @@ opd['cluster'] = opd['NUTS3'].apply(lambda x: clusterd[x])
           #dpi=500, bbox_inches='tight')
 
 
-# In[ ]:
+# In[175]:
 
 
 """Making sure the cluster labels match"""
@@ -301,7 +301,7 @@ pivot_df['integration_level'] = pivot_df['cluster'].map(cluster_labels)
 opd['integration_level'] = opd['cluster'].map(cluster_labels)
 
 
-# In[ ]:
+# In[176]:
 
 
 """Enhancing the plot"""
@@ -331,14 +331,14 @@ g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Cl
           dpi=500, bbox_inches='tight')
 
 
-# In[ ]:
+# In[177]:
 
 
 # Checking the silhouette scores per cluster
 sco_df
 
 
-# In[ ]:
+# In[178]:
 
 
 # Counting the number of unique NUTS3 per cluster
@@ -349,7 +349,7 @@ nuts3_per_cluster_opd
 
 # ### Destinations per origin regions
 
-# In[ ]:
+# In[179]:
 
 
 # Pivoting the data
@@ -363,14 +363,14 @@ wcss_d = []
 silhouette_scores_d = []
 
 
-# In[ ]:
+# In[180]:
 
 
 """Clustering"""
 
 # Initiating the model
 print("Initializing model")
-model = TimeSeriesKMeans(n_clusters=6, metric="dtw", n_init=15, max_iter=42, random_state=42)
+model = TimeSeriesKMeans(n_clusters=4, metric="dtw", n_init=15, max_iter=42, random_state=42)
 
 # Fitting the model
 print("Fitting model")
@@ -384,7 +384,7 @@ sco_df_d = pd.DataFrame()
 
 # Looping over cluster count
 print("Calculating silhouette scores..")
-for label in range(6):
+for label in range():
         
         # Getting silhouette score for current cluser
         score = silhs[clusters == label].mean()
@@ -419,7 +419,7 @@ dpo['cluster'] = dpo['NUTS3'].apply(lambda x: clusterd[x])
           #dpi=500, bbox_inches='tight')
 
 
-# In[ ]:
+# In[181]:
 
 
 """Making sure the cluster labels match"""
@@ -455,7 +455,7 @@ pivot_df_d['integration_level'] = pivot_df_d['cluster'].map(cluster_labels)
 dpo['integration_level'] = dpo['cluster'].map(cluster_labels)
 
 
-# In[ ]:
+# In[182]:
 
 
 """Enhancing the plot"""
@@ -485,14 +485,14 @@ g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Cl
           dpi=500, bbox_inches='tight')
 
 
-# In[ ]:
+# In[183]:
 
 
 # Checking the silhouette scores per cluster
 sco_df_d
 
 
-# In[ ]:
+# In[184]:
 
 
 # Counting the number of unique NUTS3 per cluster
@@ -501,10 +501,10 @@ nuts3_per_cluster_dpo.columns = ['cluster', 'unique_NUTS3_count']
 nuts3_per_cluster_dpo
 
 
-# In[11]:
+# In[ ]:
 
 
-#k_range = range(2, 8) # Test k from 2 to 8
+## k_range = range(2, 8) # Test k from 2 to 8
 #print('Starting clustering...')
 #for k in k_range:
         #kmeans = TimeSeriesKMeans(n_clusters=k, metric='dtw', random_state=42,
