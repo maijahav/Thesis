@@ -1363,6 +1363,30 @@ combined_orig.to_csv('/Users/maijahavusela/Desktop/gradu/data/pythonista/OPD_typ
 combined_orig[0:20]
 
 
+# # Max values, uniques
+
+# In[202]:
+
+
+max_value = dpo['uniques'].max()
+max_nuts3 = dpo[dpo['uniques'] == max_value]['NUTS3']
+
+print(f"Max 'uniques' value: {max_value}")
+print("NUTS3 region(s) with this value:")
+print(max_nuts3)
+
+
+# In[203]:
+
+
+max_value = opd['uniques'].max()
+max_nuts3 = opd[opd['uniques'] == max_value]['NUTS3']
+
+print(f"Max 'uniques' value: {max_value}")
+print("NUTS3 region(s) with this value:")
+print(max_nuts3)
+
+
 # In[ ]:
 
 
