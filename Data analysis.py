@@ -1387,6 +1387,50 @@ print("NUTS3 region(s) with this value:")
 print(max_nuts3)
 
 
+# In[205]:
+
+
+max_value = opd_2014_2019['uniques'].max()
+max_nuts3 = opd_2014_2019[opd_2014_2019['uniques'] == max_value]['NUTS3']
+
+print(f"Max 'uniques' value: {max_value}")
+print("NUTS3 region(s) with this value:")
+print(max_nuts3)
+
+
+# In[206]:
+
+
+max_value = opd_2020_2022['uniques'].max()
+max_nuts3 = opd_2020_2022[opd_2020_2022['uniques'] == max_value]['NUTS3']
+
+print(f"Max 'uniques' value: {max_value}")
+print("NUTS3 region(s) with this value:")
+print(max_nuts3)
+
+
+# In[207]:
+
+
+max_value = dpo_2014_2019['uniques'].max()
+max_nuts3 = dpo_2014_2019[dpo_2014_2019['uniques'] == max_value]['NUTS3']
+
+print(f"Max 'uniques' value: {max_value}")
+print("NUTS3 region(s) with this value:")
+print(max_nuts3)
+
+
+# In[208]:
+
+
+max_value = dpo_2020_2022['uniques'].max()
+max_nuts3 = dpo_2020_2022[dpo_2020_2022['uniques'] == max_value]['NUTS3']
+
+print(f"Max 'uniques' value: {max_value}")
+print("NUTS3 region(s) with this value:")
+print(max_nuts3)
+
+
 # In[ ]:
 
 
