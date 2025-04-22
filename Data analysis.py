@@ -301,7 +301,7 @@ pivot_df['integration_level'] = pivot_df['cluster'].map(cluster_labels)
 opd['integration_level'] = opd['cluster'].map(cluster_labels)
 
 
-# In[176]:
+# In[229]:
 
 
 """Enhancing the plot"""
@@ -312,6 +312,15 @@ cluster_names = {
     2: "2. Moderately integrated",
     3: "3. Highly integrated"
 }
+
+# Define custom colors for each cluster description
+custom_palette = {
+    "0. Poorly integrated": "#f39339",
+    "1. Less integrated": "#fcc178",
+    "2. Moderately integrated": "#a297d7",
+    "3. Highly integrated": "#715da1"
+}
+
 # Get cluster descriptions in order by cluster number
 cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
 
@@ -321,13 +330,13 @@ opd['Cluster description'] = opd['cluster'].map(cluster_names)
 # Plotting
 print("Plotting")
 g = sns.lmplot(data=opd, x='year', y='norm_shannon', hue='Cluster description', hue_order=cluster_order,
-               height=6, aspect=1.2, order=1, scatter=False)
+               palette=custom_palette, height=6, aspect=1.2, order=3, scatter=False)
 
 g.set_axis_labels("Year", "Normalized Shannon Entropy")
 g.fig.suptitle("Normalized Shannon entropy per cluster, origins per destination regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_all_opd_normsha.png',
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_all_opd_normsha_O3.png',
           dpi=500, bbox_inches='tight')
 
 
@@ -455,7 +464,7 @@ pivot_df_d['integration_level'] = pivot_df_d['cluster'].map(cluster_labels)
 dpo['integration_level'] = dpo['cluster'].map(cluster_labels)
 
 
-# In[182]:
+# In[230]:
 
 
 """Enhancing the plot"""
@@ -466,6 +475,15 @@ cluster_names = {
     2: "2. Moderately integrated",
     3: "3. Highly integrated"
 }
+
+# Define custom colors for each cluster description
+custom_palette = {
+    "0. Poorly integrated": "#f39339",
+    "1. Less integrated": "#fcc178",
+    "2. Moderately integrated": "#a297d7",
+    "3. Highly integrated": "#715da1"
+}
+
 # Get cluster descriptions in order by cluster number
 cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
 
@@ -475,13 +493,13 @@ dpo['Cluster description'] = dpo['cluster'].map(cluster_names)
 # Plotting
 print("Plotting")
 g = sns.lmplot(data=dpo, x='year', y='norm_shannon', hue='Cluster description', hue_order=cluster_order,
-               height=6, aspect=1.2, order=1, scatter=False)
+               palette=custom_palette, height=6, aspect=1.2, order=3, scatter=False)
 
 g.set_axis_labels("Year", "Normalized Shannon Entropy")
 g.fig.suptitle("Normalized Shannon entropy per cluster, destinations per origin regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_all_dpo_normsha.png',
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_all_dpo_normsha_O3.png',
           dpi=500, bbox_inches='tight')
 
 
@@ -744,7 +762,7 @@ pivot_df_pre['integration_level'] = pivot_df_pre['cluster'].map(cluster_labels)
 opd_2014_2019['integration_level'] = opd_2014_2019['cluster'].map(cluster_labels)
 
 
-# In[138]:
+# In[231]:
 
 
 """Enhancing the plot"""
@@ -755,6 +773,15 @@ cluster_names = {
     2: "2. Moderately integrated",
     3: "3. Highly integrated"
 }
+
+# Define custom colors for each cluster description
+custom_palette = {
+    "0. Poorly integrated": "#f39339",
+    "1. Less integrated": "#fcc178",
+    "2. Moderately integrated": "#a297d7",
+    "3. Highly integrated": "#715da1"
+}
+
 # Get cluster descriptions in order by cluster number
 cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
 
@@ -764,13 +791,13 @@ opd_2014_2019['Cluster description'] = opd_2014_2019['cluster'].map(cluster_name
 # Plotting
 print("Plotting")
 g = sns.lmplot(data=opd_2014_2019, x='year', y='norm_shannon', hue='Cluster description', hue_order=cluster_order,
-               height=6, aspect=1.2, order=1, scatter=False)
+               palette=custom_palette, height=6, aspect=1.2, order=3, scatter=False)
 
 g.set_axis_labels("Year", "Normalized Shannon Entropy")
 g.fig.suptitle("Normalized Shannon entropy per cluster, pre-Covid-19 origins per destination regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_opd_normsha.png',
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_opd_normsha_O3.png',
           dpi=500, bbox_inches='tight')
 
 
@@ -888,7 +915,7 @@ pivot_df_post['integration_level'] = pivot_df_post['cluster'].map(cluster_labels
 opd_2020_2022['integration_level'] = opd_2020_2022['cluster'].map(cluster_labels)
 
 
-# In[130]:
+# In[232]:
 
 
 """Enhancing the plot"""
@@ -899,6 +926,15 @@ cluster_names = {
     2: "2. Moderately integrated",
     3: "3. Highly integrated"
 }
+
+# Define custom colors for each cluster description
+custom_palette = {
+    "0. Poorly integrated": "#f39339",
+    "1. Less integrated": "#fcc178",
+    "2. Moderately integrated": "#a297d7",
+    "3. Highly integrated": "#715da1"
+}
+
 # Get cluster descriptions in order by cluster number
 cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
 
@@ -909,14 +945,14 @@ opd_2020_2022['Cluster description'] = opd_2020_2022['cluster'].map(cluster_name
 print("Plotting")
 g = sns.lmplot(
     data=opd_2020_2022, x='year', y='norm_shannon', hue='Cluster description',hue_order=cluster_order,
-    height=6, aspect=1.2, order=1, scatter=False, ci=None
+    palette=custom_palette, height=6, aspect=1.2, order=3, scatter=False, ci=None
 ).set(xlim=(2019.5, 2022.5), xticks=[2020, 2021, 2022])
 
 g.set_axis_labels("Year", "Normalized Shannon Entropy")
 g.fig.suptitle("Normalized Shannon entropy per cluster, post-Covid-19 origins per destination regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_opd_normsha.png',
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_opd_normsha_O3.png',
           dpi=500, bbox_inches='tight')
 
 
@@ -1102,7 +1138,7 @@ pivot_df_pred['integration_level'] = pivot_df_pred['cluster'].map(cluster_labels
 dpo_2014_2019['integration_level'] = dpo_2014_2019['cluster'].map(cluster_labels)
 
 
-# In[127]:
+# In[233]:
 
 
 """Enhancing the plot"""
@@ -1113,6 +1149,15 @@ cluster_names = {
     2: "2. Moderately integrated",
     3: "3. Highly integrated"
 }
+
+# Define custom colors for each cluster description
+custom_palette = {
+    "0. Poorly integrated": "#f39339",
+    "1. Less integrated": "#fcc178",
+    "2. Moderately integrated": "#a297d7",
+    "3. Highly integrated": "#715da1"
+}
+
 # Get cluster descriptions in order by cluster number
 cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
 
@@ -1122,13 +1167,13 @@ dpo_2014_2019['Cluster description'] = dpo_2014_2019['cluster'].map(cluster_name
 # Plotting
 print("Plotting")
 g = sns.lmplot(data=dpo_2014_2019, x='year', y='norm_shannon', hue='Cluster description', hue_order=cluster_order,
-               height=6, aspect=1.2, order=1, scatter=False)
+               palette=custom_palette, height=6, aspect=1.2, order=3, scatter=False)
 
 g.set_axis_labels("Year", "Normalized Shannon Entropy")
 g.fig.suptitle("Normalized Shannon entropy per cluster, pre-Covid-19 destinations per origin regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_dpo_normsha.png',
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_preCov_dpo_normsha_O3.png',
           dpi=500, bbox_inches='tight')
 
 
@@ -1240,7 +1285,7 @@ pivot_df_postd['integration_level'] = pivot_df_postd['cluster'].map(cluster_labe
 dpo_2020_2022['integration_level'] = dpo_2020_2022['cluster'].map(cluster_labels)
 
 
-# In[125]:
+# In[234]:
 
 
 """Enhancing the plot"""
@@ -1251,6 +1296,15 @@ cluster_names = {
     2: "2. Moderately integrated",
     3: "3. Highly integrated"
 }
+
+# Define custom colors for each cluster description
+custom_palette = {
+    "0. Poorly integrated": "#f39339",
+    "1. Less integrated": "#fcc178",
+    "2. Moderately integrated": "#a297d7",
+    "3. Highly integrated": "#715da1"
+}
+
 # Get cluster descriptions in order by cluster number
 cluster_order = [cluster_names[i] for i in sorted(cluster_names.keys())][::-1]
 
@@ -1261,14 +1315,14 @@ dpo_2020_2022['Cluster description'] = dpo_2020_2022['cluster'].map(cluster_name
 print("Plotting")
 g = sns.lmplot(
     data=dpo_2020_2022, x='year', y='norm_shannon', hue='Cluster description',hue_order=cluster_order,
-    height=6, aspect=1.2, order=1, scatter=False, ci=None
+    palette=custom_palette, height=6, aspect=1.2, order=3, scatter=False, ci=None
 ).set(xlim=(2019.5, 2022.5), xticks=[2020, 2021, 2022])
 
 g.set_axis_labels("Year", "Normalized Shannon Entropy")
 g.fig.suptitle("Normalized Shannon entropy per cluster, post-Covid-19 destinations per origin regions", y=1.02)
 
 # Save the plot
-g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_dpo_normsha.png',
+g.savefig('/Users/maijahavusela/Desktop/gradu/maps and graphs/graphs/clusters/Clusters_postCov_dpo_normsha_O3.png',
           dpi=500, bbox_inches='tight')
 
 
@@ -1307,7 +1361,7 @@ postd = postd.rename(columns={'Cluster description': 'Post-COVID Cluster'})
 combined_dest = pd.merge(pred, postd, on='NUTS3', how='outer')
 
 
-# In[159]:
+# In[235]:
 
 
 # Create the 'typology' column by combining the cluster numbers from both columns
@@ -1321,8 +1375,31 @@ combined_dest['typology'] = combined_dest.apply(
     else "x_x", axis=1
 )
 
-# Display the updated dataframe
-combined_dest[0:20]
+# Defining a function to create a column for the change
+def integration_change(typology):
+    pre, post = typology.split('_')
+    if pre == 'x' or post == 'x':
+        return 'Unknown'
+    
+    pre, post = int(pre), int(post)
+    
+    if pre == post:
+        return {
+            0: 'Remains poorly integrated',
+            1: 'Remains less integrated',
+            2: 'Remains moderately integrated',
+            3: 'Remains highly integrated'
+        }.get(pre, 'Remains at same level')  # fallback in case new cluster levels appear
+    
+    if post > pre:
+        return 'Became more integrated'
+    elif post < pre:
+        return 'Became less integrated'
+
+combined_dest['integration_change'] = combined_dest['typology'].apply(integration_change)
+combined_dest
+
+#combined_dest.to_csv('/Users/maijahavusela/Desktop/gradu/data/pythonista/DPO_typology_with_change.csv')
 
 
 # ## Origins per destination regions
@@ -1343,7 +1420,7 @@ post = post.rename(columns={'Cluster description': 'Post-COVID Cluster'})
 combined_orig = pd.merge(pre, post, on='NUTS3', how='outer')
 
 
-# In[160]:
+# In[236]:
 
 
 # Create the 'typology' column by combining the cluster numbers from both columns
@@ -1357,10 +1434,68 @@ combined_orig['typology'] = combined_orig.apply(
     else "x_x", axis=1
 )
 
-combined_orig.to_csv('/Users/maijahavusela/Desktop/gradu/data/pythonista/OPD_typology_pre_post.csv')
+# Defining a function to create a column for the change
+def integration_change(typology):
+    pre, post = typology.split('_')
+    if pre == 'x' or post == 'x':
+        return 'Unknown'
+    
+    pre, post = int(pre), int(post)
+    
+    if pre == post:
+        return {
+            0: 'Remains poorly integrated',
+            1: 'Remains less integrated',
+            2: 'Remains moderately integrated',
+            3: 'Remains highly integrated'
+        }.get(pre, 'Remains at same level')  # fallback in case new cluster levels appear
+    
+    if post > pre:
+        return 'Became more integrated'
+    elif post < pre:
+        return 'Became less integrated'
 
-# Display the updated dataframe
-combined_orig[0:20]
+combined_orig['integration_change'] = combined_orig['typology'].apply(integration_change)
+combined_orig
+#combined_orig.to_csv('/Users/maijahavusela/Desktop/gradu/data/pythonista/OPD_typology_with_change.csv')
+
+
+# ## Regional characteristics
+# Adding regional characteristics to the typology.
+
+# In[259]:
+
+
+# Read data
+reg = pd.read_csv('/Users/maijahavusela/Desktop/gradu/data/pythonista/regional char/regional_char.csv',sep=',')
+
+# Merging with the typology dataframes
+merged_orig = pd.merge(combined_orig, reg, on=['NUTS3'], how='inner')
+
+# Select the relevant numeric columns
+numeric_cols = ['GDP', 'population', 'median age', 'employed']
+
+# Group by 'integration_change' and compute summary statistics
+summary_stats = merged_orig.groupby('integration_change')[numeric_cols].agg(['max', 'min', 'mean', 'median'])
+
+# Get the specific summary row for 'Became less integrated'
+raw_summary = summary_stats.loc['Became less integrated']
+
+# Flatten the multi-level index into columns (Variable, Statistic)
+clean_summary = raw_summary.reset_index()
+
+# Rename columns for better clarity
+clean_summary.columns = ['Variable', 'Statistic', 'Value']
+
+# Now pivot the DataFrame so each variable becomes a row and stats are columns
+reg_became_less_integrated = clean_summary.pivot(index='Variable', columns='Statistic', values='Value')
+
+# Reset the index name for a cleaner DataFrame
+reg_became_less_integrated.index.name = None
+
+# Set pandas to display numbers in regular float format (not scientific notation)
+pd.set_option('display.float_format', '{:,.2f}'.format)
+reg_became_less_integrated
 
 
 # # Max values, uniques
