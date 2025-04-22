@@ -1463,8 +1463,10 @@ combined_orig
 # ## Regional characteristics
 # Adding regional characteristics to the typology.
 
-# In[259]:
+# In[276]:
 
+
+"""OPD"""
 
 # Read data
 reg = pd.read_csv('/Users/maijahavusela/Desktop/gradu/data/pythonista/regional char/regional_char.csv',sep=',')
@@ -1473,29 +1475,192 @@ reg = pd.read_csv('/Users/maijahavusela/Desktop/gradu/data/pythonista/regional c
 merged_orig = pd.merge(combined_orig, reg, on=['NUTS3'], how='inner')
 
 # Select the relevant numeric columns
-numeric_cols = ['GDP', 'population', 'median age', 'employed']
+numeric_cols = ['GDP', 'population', 'median age', 'employed', 'URBN_TYPE', 'MOUNT_TYPE']
 
-# Group by 'integration_change' and compute summary statistics
+# Get the summary statistics
 summary_stats = merged_orig.groupby('integration_change')[numeric_cols].agg(['max', 'min', 'mean', 'median'])
 
-# Get the specific summary row for 'Became less integrated'
-raw_summary = summary_stats.loc['Became less integrated']
+# Access the 'mean' for each variable
+mean_stats = summary_stats.xs('mean', axis=1, level=1)
 
-# Flatten the multi-level index into columns (Variable, Statistic)
-clean_summary = raw_summary.reset_index()
+# Create the final summary DataFrame with only the mean values
+final_summary = pd.DataFrame({
+    'GDP (avg)': mean_stats['GDP'],
+    'Employed (avg)': mean_stats['employed'],
+    'Population (avg)': mean_stats['population'],
+    'Age (med)': mean_stats['median age'],
+})
 
-# Rename columns for better clarity
-clean_summary.columns = ['Variable', 'Statistic', 'Value']
+# Reset index to have the integration_change as a column
+final_summary = final_summary.reset_index()
 
-# Now pivot the DataFrame so each variable becomes a row and stats are columns
-reg_became_less_integrated = clean_summary.pivot(index='Variable', columns='Statistic', values='Value')
+# Set integration_change as index for the final output
+final_summary.set_index('integration_change', inplace=True)
+final_summary
 
-# Reset the index name for a cleaner DataFrame
-reg_became_less_integrated.index.name = None
 
-# Set pandas to display numbers in regular float format (not scientific notation)
-pd.set_option('display.float_format', '{:,.2f}'.format)
-reg_became_less_integrated
+# In[277]:
+
+
+"""DPO"""
+
+# Merging with the typology dataframes
+merged_dest = pd.merge(combined_dest, reg, on=['NUTS3'], how='inner')
+
+# Select the relevant numeric columns
+numeric_cols = ['GDP', 'population', 'median age', 'employed','URBN_TYPE','MOUNT_TYPE']
+
+# Get the summary statistics
+summary_stats = merged_dest.groupby('integration_change')[numeric_cols].agg(['max', 'min', 'mean', 'median'])
+
+# Access the 'mean' for each variable
+mean_stats = summary_stats.xs('mean', axis=1, level=1)
+
+# Create the final summary DataFrame with only the mean values
+final_summary = pd.DataFrame({
+    'GDP (avg)': mean_stats['GDP'],
+    'Employed (avg)': mean_stats['employed'],
+    'Population (avg)': mean_stats['population'],
+    'Age (med)': mean_stats['median age']
+})
+
+# Reset index to have the integration_change as a column
+final_summary = final_summary.reset_index()
+
+# Set integration_change as index for the final output
+final_summary.set_index('integration_change', inplace=True)
+final_summary
+
+
+# ## Urban/rural
+
+# urbn_type, 
+# 1 = predominantly urban
+# 2 = intermediate region
+# 3 = predominantly rural
+
+# In[270]:
+
+
+"""OPD"""
+
+# Group by integration_change and URBN_TYPE to get the count of NUTS3 for each combination
+count_by_integration_urbn = merged_orig.groupby(['integration_change', 'URBN_TYPE'])['NUTS3'].count().reset_index()
+
+# Get the total count of NUTS3 regions for each integration_change class
+total_count_by_integration = merged_orig.groupby('integration_change')['NUTS3'].count().reset_index()
+total_count_by_integration.rename(columns={'NUTS3': 'total_count'}, inplace=True)
+
+# Merge the counts with the total counts
+count_by_integration_urbn = count_by_integration_urbn.merge(total_count_by_integration, on='integration_change')
+
+# Calculate the percentage
+count_by_integration_urbn['percentage'] = (count_by_integration_urbn['NUTS3'] / count_by_integration_urbn['total_count']) * 100
+
+# Keep only relevant columns: integration_change, URBN_TYPE, and percentage
+final_result = count_by_integration_urbn[['integration_change', 'URBN_TYPE', 'percentage']]
+
+# Pivot the table to make URBN_TYPE classes as columns
+pivot_result = final_result.pivot(index='integration_change', columns='URBN_TYPE', values='percentage')
+pivot_result
+
+
+# In[273]:
+
+
+"""DPO"""
+
+# Group by integration_change and URBN_TYPE to get the count of NUTS3 for each combination
+count_by_integration_urbn = merged_dest.groupby(['integration_change', 'URBN_TYPE'])['NUTS3'].count().reset_index()
+
+# Get the total count of NUTS3 regions for each integration_change class
+total_count_by_integration = merged_dest.groupby('integration_change')['NUTS3'].count().reset_index()
+total_count_by_integration.rename(columns={'NUTS3': 'total_count'}, inplace=True)
+
+# Merge the counts with the total counts
+count_by_integration_urbn = count_by_integration_urbn.merge(total_count_by_integration, on='integration_change')
+
+# Calculate the percentage
+count_by_integration_urbn['percentage'] = (count_by_integration_urbn['NUTS3'] / count_by_integration_urbn['total_count']) * 100
+
+# Keep only relevant columns: integration_change, URBN_TYPE, and percentage
+final_result = count_by_integration_urbn[['integration_change', 'URBN_TYPE', 'percentage']]
+
+# Pivot the table to make URBN_TYPE classes as columns
+pivot_result = final_result.pivot(index='integration_change', columns='URBN_TYPE', values='percentage')
+pivot_result
+
+
+# ## Mountain type
+# mount_type, 
+# 1 = > 50 % of population live in mountain area, 
+# 2 = > 50 % mountain area, 
+# 3 = > 50 % of population live in area with > 50 % mountain area, 
+# 4 = non-mountain region
+
+# In[278]:
+
+
+"""OPD"""
+
+# Group by integration_change and URBN_TYPE to get the count of NUTS3 for each combination
+count_by_integration_urbn = merged_orig.groupby(['integration_change', 'MOUNT_TYPE'])['NUTS3'].count().reset_index()
+
+# Get the total count of NUTS3 regions for each integration_change class
+total_count_by_integration = merged_orig.groupby('integration_change')['NUTS3'].count().reset_index()
+total_count_by_integration.rename(columns={'NUTS3': 'total_count'}, inplace=True)
+
+# Merge the counts with the total counts
+count_by_integration_urbn = count_by_integration_urbn.merge(total_count_by_integration, on='integration_change')
+
+# Calculate the percentage
+count_by_integration_urbn['percentage'] = (count_by_integration_urbn['NUTS3'] / count_by_integration_urbn['total_count']) * 100
+
+# Keep only relevant columns: integration_change, URBN_TYPE, and percentage
+final_result = count_by_integration_urbn[['integration_change', 'MOUNT_TYPE', 'percentage']]
+
+# Pivot the table to make URBN_TYPE classes as columns
+pivot_result = final_result.pivot(index='integration_change', columns='MOUNT_TYPE', values='percentage')
+pivot_result
+
+
+# In[279]:
+
+
+"""DPO"""
+
+# Group by integration_change and URBN_TYPE to get the count of NUTS3 for each combination
+count_by_integration_urbn = merged_dest.groupby(['integration_change', 'MOUNT_TYPE'])['NUTS3'].count().reset_index()
+
+# Get the total count of NUTS3 regions for each integration_change class
+total_count_by_integration = merged_dest.groupby('integration_change')['NUTS3'].count().reset_index()
+total_count_by_integration.rename(columns={'NUTS3': 'total_count'}, inplace=True)
+
+# Merge the counts with the total counts
+count_by_integration_urbn = count_by_integration_urbn.merge(total_count_by_integration, on='integration_change')
+
+# Calculate the percentage
+count_by_integration_urbn['percentage'] = (count_by_integration_urbn['NUTS3'] / count_by_integration_urbn['total_count']) * 100
+
+# Keep only relevant columns: integration_change, URBN_TYPE, and percentage
+final_result = count_by_integration_urbn[['integration_change', 'MOUNT_TYPE', 'percentage']]
+
+# Pivot the table to make URBN_TYPE classes as columns
+pivot_result = final_result.pivot(index='integration_change', columns='MOUNT_TYPE', values='percentage')
+pivot_result
+
+
+# ## Coastal types
+# coast_type,
+# 0 = non-coastal
+# 1 = coastal (on coast),
+# 2 = > 50 % of population lives within 50 km of coastline,
+# 3 = non-coastal
+
+# In[ ]:
+
+
+
 
 
 # # Max values, uniques
