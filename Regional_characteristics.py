@@ -7,7 +7,7 @@
 import pandas as pd
 
 
-# In[28]:
+# In[37]:
 
 
 # Read data
@@ -15,8 +15,9 @@ gdp = pd.read_csv('/Users/maijahavusela/Desktop/gradu/data/regional char/gdp.csv
 pop = pd.read_csv('/Users/maijahavusela/Desktop/gradu/data/regional char/population.csv',sep=',')
 med_age = pd.read_csv('/Users/maijahavusela/Desktop/gradu/data/regional char/median age.csv',sep=',')
 emp = pd.read_csv('/Users/maijahavusela/Desktop/gradu/data/regional char/employed.csv',sep=',')
+urb = pd.read_csv('/Users/maijahavusela/Desktop/gradu/data/regional char/urban rural typology.csv',sep=',')
 
-# Choose wanted columns
+# Choosing wanted columns
 gdp = gdp[['geo',
            'TIME_PERIOD',
            'OBS_VALUE']]
@@ -33,7 +34,12 @@ emp = emp[['geo',
            'TIME_PERIOD',
            'OBS_VALUE']]
 
-# Rename columns
+urb = urb[['NUTS_ID',
+           'URBN_TYPE',
+          'MOUNT_TYPE',
+          'COAST_TYPE']]
+
+# Renaming columns
 gdp = gdp.rename(
     columns={
         'geo':'NUTS3',
@@ -62,6 +68,11 @@ emp = emp.rename(
         'OBS_VALUE':'employed' # Unit of measure: thousand people
     }
 )
+urb = urb.rename(
+    columns={
+        'NUTS_ID':'NUTS3'
+    }
+)
 
 # Cleaning the NUTS ID column
 pop['NUTS3'] = pop['NUTS3'].str.split(':').str[0]
@@ -75,14 +86,15 @@ merged_df = pd.merge(merged_df, emp, on=['NUTS3', 'YEAR'], how='outer')
 
 # Grouping byt NUTS ID and calculating average of all years
 grouped_df = merged_df.groupby('NUTS3')[['GDP', 'population', 'median age', 'employed']].mean().reset_index()
+grouped_df = pd.merge(grouped_df, urb, on=['NUTS3'], how='inner')
 grouped_df
 
 
-# In[29]:
+# In[38]:
 
 
 # Save data
-grouped_df.to_csv('/Users/maijahavusela/Desktop/gradu/data/pythonista/regional char/regional_char.csv')
+grouped_df.to_csv('/filepath')
 
 
 # In[ ]:
