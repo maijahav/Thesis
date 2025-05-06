@@ -37,7 +37,7 @@ This is a repository for Python scripts used to analyse Erasmus+ student mobilit
 
 
 ## Link to author's LinkedIn
-[Maija Havusela](www.linkedin.com/in/maijahavusela)
+www.linkedin.com/in/maijahavusela
 
 
 ```python
