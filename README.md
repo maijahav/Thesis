@@ -31,7 +31,7 @@ This is a repository for Python scripts used to analyse Erasmus+ student mobilit
 | :----- | :------ | :--------- | :--- |
 | 1      |   NUTS3.py  | Reads the statistical NUTS region data and cleans it     |    CSV file from GISCO  |
 | 2      |   Regional_characteristics.py   | Reads the socio-economic data and cleans it       |   CSV files from Eurostat   |
-| 3      |  Data analysis.py   | Performs all the analysis and visulization       |   CSV file of Erasmus+ student mobility (origin-destination matrix), cleaned dataframes from previous steps   |
+| 3      |  Data analysis.py   | Performs all the analysis and visualization       |   CSV file of Erasmus+ student mobility (origin-destination matrix), cleaned dataframes from previous steps   |
 
 
 
