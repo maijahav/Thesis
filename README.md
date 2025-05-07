@@ -2,8 +2,6 @@
 
 This is a repository for Python scripts used to analyse Erasmus+ student mobility data, the main data in my thesis.
 
-## Pre-requisites
-
 ### Data
 1. Spatially enriched Erasmus+ mobility data between 2014 and 2022 by [Väisänen et al.](https://doi.org/10.1038/s41597-025-04789-0)
 2. Statistical NUTS 3 region data for the year 2021 by [GISCO](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics), contains geographical typologies as well
